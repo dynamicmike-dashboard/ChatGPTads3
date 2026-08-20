@@ -1,0 +1,17 @@
+# Vercel ignore file
+node_modules
+.git
+.gitignore
+README.md
+*.log
+.env
+.env.local
+.env.production.local
+.env.development.local
+*.tsbuildinfo
+dist
+*.pem
+.vercel
+coverage
+*.md
+!README.md
