@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ActiveTab, AssessmentResult, ModalType, ThemeMode } from './types';
+import { ActiveTab, AssessmentResult, ModalType, ThemeMode, Language } from './types';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { SalesLandingView } from './components/sales/SalesLandingView';
@@ -43,6 +43,28 @@ export default function App() {
 
   const toggleTheme = () => {
     setThemeMode((prev) => (prev === 'light' ? 'dark' : 'light'));
+  };
+
+  // Language: Default to English
+  const [language, setLanguage] = useState<Language>(() => {
+    try {
+      const saved = localStorage.getItem('chatgpt_ads_language');
+      return (saved === 'en' || saved === 'es') ? saved : 'en';
+    } catch {
+      return 'en';
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('chatgpt_ads_language', language);
+    } catch (e) {
+      console.error(e);
+    }
+  }, [language]);
+
+  const toggleLanguage = () => {
+    setLanguage((prev) => (prev === 'en' ? 'es' : 'en'));
   };
 
   const [assessmentResult, setAssessmentResult] = useState<AssessmentResult | null>(() => {
@@ -109,7 +131,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-white transition-colors duration-150">
+    <div className={`min-h-screen flex flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-white transition-colors duration-150 ${themeMode === 'dark' ? 'dark' : ''}`}>
       {/* App Header */}
       <Header
         activeTab={activeTab}
@@ -120,6 +142,8 @@ export default function App() {
         deferredPrompt={deferredPrompt}
         themeMode={themeMode}
         onToggleTheme={toggleTheme}
+        language={language}
+        onToggleLanguage={toggleLanguage}
       />
 
       {/* Main App Content View Switcher */}
@@ -131,6 +155,7 @@ export default function App() {
             onOpenCheckout={() => setActiveModal('checkout')}
             onOpenDossier={() => setActiveTab('dossier')}
             onOpenSimulator={() => setActiveTab('simulator')}
+            language={language}
           />
         )}
 
@@ -141,12 +166,13 @@ export default function App() {
             onOpenSimulator={() => setActiveTab('simulator')}
             onOpenCourse={() => setActiveTab('course')}
             onOpenCheckout={() => setActiveModal('checkout')}
+            language={language}
           />
         )}
 
         {/* TAB 3: LIVE CHATGPT AD PREVIEW SIMULATOR */}
         {activeTab === 'simulator' && (
-          <AdPreviewSimulator />
+          <AdPreviewSimulator language={language} />
         )}
 
         {/* TAB 4: INTERACTIVE ASSESSMENT / DIAGNOSTIC REPORT */}
@@ -159,6 +185,7 @@ export default function App() {
                   setIsTakingQuiz(false);
                   if (!assessmentResult) setActiveTab('sales');
                 }}
+                language={language}
               />
             ) : (
               <AssessmentResultView
@@ -167,6 +194,7 @@ export default function App() {
                 onNavigateToCourse={() => setActiveTab('course')}
                 onNavigateToBonuses={() => setActiveTab('bonuses')}
                 onOpenCheckout={() => setActiveModal('checkout')}
+                language={language}
               />
             )}
           </div>
@@ -177,28 +205,30 @@ export default function App() {
           <CourseDashboard
             onOpenPromptVault={() => setActiveTab('prompts')}
             onOpenBonuses={() => setActiveTab('bonuses')}
+            language={language}
           />
         )}
 
         {/* TAB 6: MASTER PROMPT VAULT & GENERATOR */}
         {activeTab === 'prompts' && (
-          <PromptVaultView />
+          <PromptVaultView language={language} />
         )}
 
         {/* TAB 7: UNLOCKED BONUS SUITE */}
         {activeTab === 'bonuses' && (
-          <BonusesView />
+          <BonusesView language={language} />
         )}
       </main>
 
       {/* App Footer with Modal Triggers */}
-      <Footer onOpenModal={(m) => setActiveModal(m)} />
+      <Footer onOpenModal={(m) => setActiveModal(m)} language={language} />
 
       {/* Stripe Checkout Modal */}
       <StripeCheckoutModal
         isOpen={activeModal === 'checkout'}
         onClose={() => setActiveModal(null)}
         onSuccess={handlePurchaseSuccess}
+        language={language}
       />
 
       {/* Legal, User Manual, & Install Modals */}
@@ -206,6 +236,7 @@ export default function App() {
         activeModal={activeModal}
         onClose={() => setActiveModal(null)}
         deferredPrompt={deferredPrompt}
+        language={language}
       />
     </div>
   );

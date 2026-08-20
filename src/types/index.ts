@@ -1,5 +1,6 @@
 export type ActiveTab = 'sales' | 'dossier' | 'simulator' | 'assessment' | 'course' | 'prompts' | 'bonuses';
 export type ThemeMode = 'light' | 'dark';
+export type Language = 'en' | 'es';
 
 export type ReadinessCategory = 
   | 'offer_clarity'

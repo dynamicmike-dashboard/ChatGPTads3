@@ -1,0 +1,31 @@
+{
+  "name": "ChatGPT Ads Readiness & Launch Playbook",
+  "short_name": "ChatGPT Ads Playbook",
+  "description": "Interactive ChatGPT Ads Readiness Assessment, diagnostic radar report, 12-part intensive masterclass curriculum, 60 advanced prompts, and implementation playbook.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#0f172a",
+  "background_color": "#090d16",
+  "lang": "en",
+  "categories": ["education", "business", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

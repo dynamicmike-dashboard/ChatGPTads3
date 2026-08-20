@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActiveTab, ModalType, ThemeMode } from '../../types';
+import { ActiveTab, ModalType, ThemeMode, Language } from '../../types';
 import { 
   Sparkles, 
   BookOpen, 
@@ -15,7 +15,9 @@ import {
   Moon,
   Compass,
   Zap,
-  HelpCircle
+  HelpCircle,
+  Globe,
+  Languages
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -27,6 +29,8 @@ interface HeaderProps {
   deferredPrompt?: any;
   themeMode: ThemeMode;
   onToggleTheme: () => void;
+  language: Language;
+  onToggleLanguage: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -37,17 +41,19 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCheckout,
   deferredPrompt,
   themeMode,
-  onToggleTheme
+  onToggleTheme,
+  language,
+  onToggleLanguage
 }) => {
   return (
-    <header className="sticky top-0 z-40 bg-white/90 dark:bg-slate-950/90 border-b border-slate-200 dark:border-slate-800/80 backdrop-blur-md transition-colors">
+    <header className="sticky top-0 z-40 bg-white/95 border-b border-slate-200 backdrop-blur-md">
       {/* Top micro announcement ticker */}
-      <div className="bg-gradient-to-r from-emerald-600 via-teal-700 to-cyan-700 dark:from-emerald-950 dark:via-slate-950 dark:to-indigo-950 py-1.5 px-4 text-center border-b border-emerald-500/20">
-        <div className="flex items-center justify-center gap-2 text-[11px] font-semibold text-white dark:text-slate-300">
-          <span className="inline-block w-2 h-2 rounded-full bg-emerald-300 dark:bg-emerald-400 animate-ping"></span>
+      <div className="bg-gradient-to-r from-emerald-600 via-teal-700 to-cyan-700 py-1.5 px-4 text-center border-b border-emerald-500/20">
+        <div className="flex items-center justify-center gap-2 text-[11px] font-semibold text-white">
+          <span className="inline-block w-2 h-2 rounded-full bg-emerald-300 animate-ping"></span>
           <span><strong>2026 Live Rollout:</strong> ChatGPT Ads active in US, UK, Mexico, Brazil, Japan & South Korea</span>
-          <span className="hidden sm:inline text-emerald-200 dark:text-slate-500">•</span>
-          <span className="hidden sm:inline text-white dark:text-emerald-400 font-bold">Self-serve $3.00–$5.50 CPC bidding</span>
+          <span className="hidden sm:inline text-emerald-200">•</span>
+          <span className="hidden sm:inline text-white font-bold">Self-serve $3.00–$5.50 CPC bidding</span>
         </div>
       </div>
 
@@ -58,35 +64,35 @@ export const Header: React.FC<HeaderProps> = ({
           className="flex items-center gap-2.5 cursor-pointer group shrink-0"
         >
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-indigo-600 p-0.5 shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-            <div className="w-full h-full bg-white dark:bg-slate-950 rounded-[10px] flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <div className="w-full h-full bg-white rounded-[10px] flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-emerald-600" />
             </div>
           </div>
 
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-black text-sm sm:text-base text-slate-900 dark:text-white tracking-tight">
-                CHATGPT <span className="text-emerald-600 dark:text-emerald-400">ADS</span>
+              <span className="font-black text-sm sm:text-base text-slate-900 tracking-tight">
+                CHATGPT <span className="text-emerald-600">ADS</span>
               </span>
-              <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30">
+              <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-700 border border-emerald-200">
                 PWA
               </span>
             </div>
-            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium block -mt-0.5 hidden sm:block">
+            <span className="text-[10px] text-slate-500 font-medium block -mt-0.5 hidden sm:block">
               Readiness & Launch Playbook
             </span>
           </div>
         </div>
 
         {/* Navigation Tabs (Desktop) */}
-        <nav className="hidden xl:flex items-center gap-1 bg-slate-100 dark:bg-slate-900/90 p-1 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-inner">
+        <nav className="hidden xl:flex items-center gap-1 bg-slate-100 p-1 rounded-2xl border border-slate-200 shadow-inner">
           <button
             type="button"
             onClick={() => setActiveTab('sales')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'sales'
-                ? 'bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                ? 'bg-white text-emerald-700 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Overview
@@ -97,11 +103,11 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setActiveTab('dossier')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'dossier'
-                ? 'bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                ? 'bg-white text-emerald-700 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Compass className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> Executive Guide
+            <Compass className="w-3 h-3 text-emerald-600" /> Executive Guide
           </button>
 
           <button
@@ -109,11 +115,11 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setActiveTab('simulator')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'simulator'
-                ? 'bg-white dark:bg-slate-800 text-cyan-700 dark:text-cyan-400 shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                ? 'bg-white text-cyan-700 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Zap className="w-3 h-3 text-cyan-600 dark:text-cyan-400" /> Ad Simulator
+            <Zap className="w-3 h-3 text-cyan-600" /> Ad Simulator
           </button>
 
           <button
@@ -121,11 +127,11 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setActiveTab('assessment')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'assessment'
-                ? 'bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                ? 'bg-white text-emerald-700 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Sparkles className="w-3 h-3 text-cyan-600 dark:text-cyan-400" /> Diagnostic
+            <Sparkles className="w-3 h-3 text-cyan-600" /> Diagnostic
           </button>
 
           <button
@@ -133,11 +139,11 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setActiveTab('course')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'course'
-                ? 'bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                ? 'bg-white text-emerald-700 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <BookOpen className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> Masterclass (12)
+            <BookOpen className="w-3 h-3 text-emerald-600" /> Masterclass (12)
           </button>
 
           <button
@@ -145,11 +151,11 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setActiveTab('prompts')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'prompts'
-                ? 'bg-white dark:bg-slate-800 text-cyan-700 dark:text-cyan-400 shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                ? 'bg-white text-cyan-700 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Terminal className="w-3 h-3 text-cyan-600 dark:text-cyan-400" /> Prompts (60)
+            <Terminal className="w-3 h-3 text-cyan-600" /> Prompts (60)
           </button>
 
           <button
@@ -157,44 +163,30 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setActiveTab('bonuses')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'bonuses'
-                ? 'bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-400 shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                ? 'bg-white text-indigo-700 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Gift className="w-3 h-3 text-indigo-600 dark:text-indigo-400" /> Bonuses
+            <Gift className="w-3 h-3 text-indigo-600" /> Bonuses
           </button>
         </nav>
 
-        {/* Right Actions: Light/Dark Theme Switcher + Install PWA + Buy */}
+        {/* Right Actions: Install PWA + Buy */}
         <div className="flex items-center gap-2">
-          {/* Theme Toggle Button */}
-          <button
-            type="button"
-            onClick={onToggleTheme}
-            className="p-2 rounded-xl text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 transition-colors cursor-pointer"
-            title={themeMode === 'light' ? 'Switch to Dark Mode' : 'Switch to Clean Light Theme'}
-          >
-            {themeMode === 'light' ? (
-              <Moon className="w-4 h-4 text-slate-700" />
-            ) : (
-              <Sun className="w-4 h-4 text-amber-400" />
-            )}
-          </button>
-
           {/* Install PWA Button */}
           <button
             type="button"
             onClick={() => onOpenModal('install')}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 transition-colors cursor-pointer"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors cursor-pointer"
             title="Install as Mobile or Desktop App"
           >
-            <Smartphone className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+            <Smartphone className="w-3.5 h-3.5 text-cyan-600" />
             <span>Install App</span>
           </button>
 
           {/* License Status / Buy License */}
           {hasPurchased ? (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
               <Unlock className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">License</span> Active
             </div>
@@ -212,53 +204,53 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Mobile Sub-Navigation Bar */}
-      <div className="xl:hidden flex items-center justify-around bg-slate-50 dark:bg-slate-900/90 border-t border-slate-200 dark:border-slate-800/80 px-2 py-1.5 overflow-x-auto gap-1">
+      <div className="xl:hidden flex items-center justify-around bg-slate-50 border-t border-slate-200 px-2 py-1.5 overflow-x-auto gap-1">
         <button
           type="button"
           onClick={() => setActiveTab('sales')}
-          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'sales' ? 'text-emerald-700 bg-white shadow-sm dark:text-emerald-400 dark:bg-slate-800' : 'text-slate-600 dark:text-slate-400'}`}
+          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'sales' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'}`}
         >
           Overview
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('dossier')}
-          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'dossier' ? 'text-emerald-700 bg-white shadow-sm dark:text-emerald-400 dark:bg-slate-800' : 'text-slate-600 dark:text-slate-400'}`}
+          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'dossier' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'}`}
         >
           Guide
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('simulator')}
-          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'simulator' ? 'text-cyan-700 bg-white shadow-sm dark:text-cyan-400 dark:bg-slate-800' : 'text-slate-600 dark:text-slate-400'}`}
+          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'simulator' ? 'text-cyan-700 bg-white shadow-sm' : 'text-slate-600'}`}
         >
           Simulator
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('assessment')}
-          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'assessment' ? 'text-emerald-700 bg-white shadow-sm dark:text-emerald-400 dark:bg-slate-800' : 'text-slate-600 dark:text-slate-400'}`}
+          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'assessment' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'}`}
         >
           Audit
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('course')}
-          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'course' ? 'text-emerald-700 bg-white shadow-sm dark:text-emerald-400 dark:bg-slate-800' : 'text-slate-600 dark:text-slate-400'}`}
+          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'course' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'}`}
         >
           Course (12)
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('prompts')}
-          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'prompts' ? 'text-cyan-700 bg-white shadow-sm dark:text-cyan-400 dark:bg-slate-800' : 'text-slate-600 dark:text-slate-400'}`}
+          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'prompts' ? 'text-cyan-700 bg-white shadow-sm' : 'text-slate-600'}`}
         >
           Prompts
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('bonuses')}
-          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'bonuses' ? 'text-indigo-700 bg-white shadow-sm dark:text-indigo-400 dark:bg-slate-800' : 'text-slate-600 dark:text-slate-400'}`}
+          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'bonuses' ? 'text-indigo-700 bg-white shadow-sm' : 'text-slate-600'}`}
         >
           Bonuses
         </button>
