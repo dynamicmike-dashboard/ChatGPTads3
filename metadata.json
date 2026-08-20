@@ -1,0 +1,6 @@
+{
+  "name": "ChatGPT Ads Readiness & Launch Playbook PWA",
+  "description": "Interactive ChatGPT Ads Readiness Assessment, diagnostic radar report, 12-part intensive masterclass curriculum, 60 advanced prompts, GHL lead capture, Stripe enrollment, and installable PWA with full prompt library.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
