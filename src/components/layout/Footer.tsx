@@ -4,9 +4,11 @@ import { Sparkles, ShieldCheck, Smartphone, HelpCircle, FileText, Mail, Heart } 
 
 interface FooterProps {
   onOpenModal: (modal: ModalType) => void;
+  language: Language;
+  paymentStatus: 'free' | 'full' | 'course';
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenModal }) => {
+export const Footer: React.FC<FooterProps> = ({ onOpenModal, language, paymentStatus }) => {
   return (
     <footer className="bg-white border-t border-slate-200 pt-12 pb-8 text-slate-600 text-xs">
       <div className="max-w-7xl mx-auto px-4">

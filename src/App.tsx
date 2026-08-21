@@ -3,6 +3,7 @@ import { ActiveTab, AssessmentResult, ModalType, ThemeMode, Language } from './t
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { SalesLandingView } from './components/sales/SalesLandingView';
+import { FullAccessDashboard } from './components/sales/FullAccessDashboard';
 import { ExecutiveDossierView } from './components/dossier/ExecutiveDossierView';
 import { AdPreviewSimulator } from './components/simulator/AdPreviewSimulator';
 import { AssessmentQuiz } from './components/assessment/AssessmentQuiz';
@@ -12,6 +13,7 @@ import { PromptVaultView } from './components/course/PromptVaultView';
 import { BonusesView } from './components/bonuses/BonusesView';
 import { StripeCheckoutModal } from './components/checkout/StripeCheckoutModal';
 import { LegalAndHelpModals } from './components/modals/LegalAndHelpModals';
+import { TeaserWrapper } from './components/sales/TeaserWrapper';
 
 // deferredPrompt MUST be a global variable for Service Worker access
 // React state is scoped to the component and causes "deferredPrompt is not defined" errors
@@ -95,7 +97,7 @@ export default function App() {
     }
   });
 
-  // Payment gate: $72 for full access, $297 for course-only
+  // Payment gate: 'free' | 'full' ($72) | 'course' ($297)
   const [paymentStatus, setPaymentStatus] = useState<'free' | 'full' | 'course'>('free');
 
   // Dev/Admin preview mode password (for testing)
@@ -151,7 +153,43 @@ export default function App() {
       console.error(err);
     }
     setActiveModal(null);
-    setActiveTab('course');
+    // Redirect based on plan
+    if (plan === 'full') {
+      setActiveTab('dashboard'); // Full Access Dashboard for $72
+    } else {
+      setActiveTab('course'); // Course Dashboard for $297
+    }
+  };
+
+  // Helper: check if user can access a tab
+  const canAccessTab = (tab: ActiveTab): boolean => {
+    if (isPreviewMode) return true;
+    if (paymentStatus === 'full') {
+      // Full access: all tabs except course (which is separate product)
+      return tab !== 'course';
+    }
+    if (paymentStatus === 'course') {
+      // Course access: course, prompts, assessment
+      return ['course', 'prompts', 'assessment'].includes(tab);
+    }
+    // Free users: only sales and assessment (for taking quiz)
+    return ['sales', 'assessment'].includes(tab);
+  };
+
+  // Helper: render tab with teaser for free users
+  const renderTab = (tab: ActiveTab, children: React.ReactNode) => {
+    if (canAccessTab(tab)) {
+      return children;
+    }
+    // Free users see teaser
+    return (
+      <TeaserWrapper 
+        tab={tab} 
+        paymentStatus={paymentStatus}
+        onUpgrade={() => setActiveModal('checkout')}
+        language={language}
+      />
+    );
   };
 
   return (
@@ -163,16 +201,16 @@ export default function App() {
         onOpenModal={(m) => setActiveModal(m)}
         hasPurchased={hasPurchased}
         onOpenCheckout={() => setActiveModal('checkout')}
-        // deferredPrompt removed from props - using global variable instead
         themeMode={themeMode}
         onToggleTheme={toggleTheme}
         language={language}
         onToggleLanguage={toggleLanguage}
+        paymentStatus={paymentStatus}
       />
 
       {/* Main App Content View Switcher */}
       <main className="flex-1">
-        {/* TAB 1: SALES & OVERVIEW */}
+        {/* TAB 1: SALES LANDING PAGE - Always visible */}
         {activeTab === 'sales' && (
           <SalesLandingView
             onStartAssessment={handleStartAssessment}
@@ -183,8 +221,21 @@ export default function App() {
           />
         )}
 
+        {/* TAB 2: FULL ACCESS DASHBOARD - For $72 payers (sales page duplicate without course upsell) */}
+        {activeTab === 'dashboard' && (
+          <FullAccessDashboard
+            onOpenDossier={() => setActiveTab('dossier')}
+            onOpenSimulator={() => setActiveTab('simulator')}
+            onOpenAssessment={() => setActiveTab('assessment')}
+            onOpenPrompts={() => setActiveTab('prompts')}
+            onOpenBonuses={() => setActiveTab('bonuses')}
+            onOpenCheckout={() => setActiveModal('checkout')}
+            language={language}
+          />
+        )}
+
         {/* TAB 2: EXECUTIVE DOSSIER & STRATEGIC GUIDE */}
-        {activeTab === 'dossier' && (
+        {activeTab === 'dossier' && renderTab('dossier', (
           <ExecutiveDossierView
             onStartAssessment={handleStartAssessment}
             onOpenSimulator={() => setActiveTab('simulator')}
@@ -192,14 +243,14 @@ export default function App() {
             onOpenCheckout={() => setActiveModal('checkout')}
             language={language}
           />
-        )}
+        ))}
 
         {/* TAB 3: LIVE CHATGPT AD PREVIEW SIMULATOR */}
-        {activeTab === 'simulator' && (
+        {activeTab === 'simulator' && renderTab('simulator', (
           <AdPreviewSimulator language={language} />
-        )}
+        ))}
 
-        {/* TAB 4: INTERACTIVE ASSESSMENT / DIAGNOSTIC REPORT */}
+        {/* TAB 4: INTERACTIVE ASSESSMENT / DIAGNOSTIC REPORT - Always accessible for quiz takers */}
         {activeTab === 'assessment' && (
           <div>
             {isTakingQuiz || !assessmentResult ? (
@@ -224,28 +275,28 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 5: 12-PART MASTERCLASS DASHBOARD */}
-        {activeTab === 'course' && (
+        {/* TAB 5: 12-PART MASTERCLASS DASHBOARD - Only for $297 course buyers */}
+        {activeTab === 'course' && renderTab('course', (
           <CourseDashboard
             onOpenPromptVault={() => setActiveTab('prompts')}
             onOpenBonuses={() => setActiveTab('bonuses')}
             language={language}
           />
-        )}
+        ))}
 
-        {/* TAB 6: MASTER PROMPT VAULT & GENERATOR */}
-        {activeTab === 'prompts' && (
+        {/* TAB 6: MASTER PROMPT VAULT & GENERATOR - $72 or $297 */}
+        {activeTab === 'prompts' && renderTab('prompts', (
           <PromptVaultView language={language} />
-        )}
+        ))}
 
-        {/* TAB 7: UNLOCKED BONUS SUITE */}
-        {activeTab === 'bonuses' && (
+        {/* TAB 7: UNLOCKED BONUS SUITE - $72 full access only */}
+        {activeTab === 'bonuses' && renderTab('bonuses', (
           <BonusesView language={language} />
-        )}
+        ))}
       </main>
 
       {/* App Footer with Modal Triggers */}
-      <Footer onOpenModal={(m) => setActiveModal(m)} language={language} />
+      <Footer onOpenModal={(m) => setActiveModal(m)} language={language} paymentStatus={paymentStatus} />
 
       {/* Stripe Checkout Modal */}
       <StripeCheckoutModal
@@ -259,7 +310,6 @@ export default function App() {
       <LegalAndHelpModals
         activeModal={activeModal}
         onClose={() => setActiveModal(null)}
-        // deferredPrompt removed from props - using global variable instead
         language={language}
       />
     </div>
