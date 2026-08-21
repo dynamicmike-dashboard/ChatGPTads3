@@ -105,6 +105,25 @@ export const SalesLandingView: React.FC<SalesLandingViewProps> = ({
           Conversational ads are expanding rapidly across the US, UK, and global markets. Discover how to evaluate benefits, budget CPCs, avoid policy traps, and deploy high-converting funnels before the auction gets crowded.
         </p>
 
+        {/* Ad Type Positioning Section */}
+        <div className="mt-8 max-w-2xl mx-auto space-y-4 text-slate-700 dark:text-slate-300">
+          <div className="p-4 rounded-lg">
+            <h3 className="font-bold text-lg mb-2">Ad Type Positioning</h3>
+            <p className="text-sm">
+              Google ads is search related. FB and Instagram ads are interrupt related. 
+              <strong className="font-semibold">ChatGPT is conversational</strong> - ads appear within natural conversation flow, exactly when users are actively problem-solving or asking questions.
+            </p>
+          </div>
+          <div className="p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-500/30">
+            <h3 className="font-bold text-lg mb-2 text-emerald-700 dark:text-emerald-400">Why This Matters</h3>
+            <ul className="list-disc list-inside space-y-1 text-sm">
+              <li>Search intent = high purchase intent</li>
+              <li>Interrupt ads = brand awareness & recall</li> 
+              <li>Conversational ads = active problem-solving moment</li>
+            </ul>
+          </div>
+        </div>
+
         {/* Dual Primary Call-to-Actions */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
           <button
