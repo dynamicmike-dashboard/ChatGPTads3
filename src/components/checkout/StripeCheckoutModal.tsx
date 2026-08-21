@@ -5,7 +5,7 @@ import confetti from 'canvas-confetti';
 interface StripeCheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: (sessionId: string) => void;
+  onSuccess: (sessionId: string, plan?: 'full' | 'course') => void;
 }
 
 export const StripeCheckoutModal: React.FC<StripeCheckoutModalProps> = ({
