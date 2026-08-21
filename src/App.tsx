@@ -87,6 +87,12 @@ export default function App() {
   // Payment gate: $72 for full access, $297 for course-only
   const [paymentStatus, setPaymentStatus] = useState<'free' | 'full' | 'course'>('free');
 
+  // Dev/Admin preview mode password (for testing)
+  const [isPreviewMode, setIsPreviewMode] = useState<boolean>(false);
+  const [previewPassword, setPreviewPassword] = useState<string>('');
+
+  const PREVIEW_PASSWORD = 'chatgpt-ads-2026';
+
   // Hook into PWA beforeinstallprompt event
   useEffect(() => {
     const handler = (e: any) => {
