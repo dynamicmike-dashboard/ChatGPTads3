@@ -84,7 +84,8 @@ export default function App() {
     }
   });
 
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  // Payment gate: $72 for full access, $297 for course-only
+  const [paymentStatus, setPaymentStatus] = useState<'free' | 'full' | 'course'>('free');
 
   // Hook into PWA beforeinstallprompt event
   useEffect(() => {
@@ -118,10 +119,12 @@ export default function App() {
     setActiveTab('assessment');
   };
 
-  const handlePurchaseSuccess = (sessionId: string) => {
+  const handlePurchaseSuccess = (sessionId: string, plan: 'full' | 'course') => {
     setHasPurchased(true);
+    setPaymentStatus(plan);
     try {
       localStorage.setItem('chatgpt_ads_has_purchased', 'true');
+      localStorage.setItem('chatgpt_ads_payment_status', plan);
       localStorage.setItem('chatgpt_ads_session_id', sessionId);
     } catch (err) {
       console.error(err);
