@@ -13,6 +13,17 @@ import { BonusesView } from './components/bonuses/BonusesView';
 import { StripeCheckoutModal } from './components/checkout/StripeCheckoutModal';
 import { LegalAndHelpModals } from './components/modals/LegalAndHelpModals';
 
+// deferredPrompt MUST be a global variable for Service Worker access
+// React state is scoped to the component and causes "deferredPrompt is not defined" errors
+// when Service Worker code tries to access it globally.
+let deferredPrompt: any = null;
+
+// Hook into PWA beforeinstallprompt event - use global variable, NOT React state
+window.addEventListener('beforeinstallprompt', (e: any) => {
+  e.preventDefault();
+  deferredPrompt = e;
+});
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('sales');
   const [activeModal, setActiveModal] = useState<ModalType>(null);
@@ -93,15 +104,19 @@ export default function App() {
 
   const PREVIEW_PASSWORD = 'chatgpt-ads-2026';
 
-  // Hook into PWA beforeinstallprompt event
+  // Check for preview mode
   useEffect(() => {
-    const handler = (e: any) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    try {
+      const saved = localStorage.getItem('chatgpt_ads_preview_mode');
+      if (saved === 'true') setIsPreviewMode(true);
+    } catch (e) {}
   }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('chatgpt_ads_preview_mode', isPreviewMode.toString());
+    } catch (e) {}
+  }, [isPreviewMode]);
 
   // Save assessment result
   const handleAssessmentComplete = (result: AssessmentResult) => {
@@ -148,7 +163,7 @@ export default function App() {
         onOpenModal={(m) => setActiveModal(m)}
         hasPurchased={hasPurchased}
         onOpenCheckout={() => setActiveModal('checkout')}
-        deferredPrompt={deferredPrompt}
+        // deferredPrompt removed from props - using global variable instead
         themeMode={themeMode}
         onToggleTheme={toggleTheme}
         language={language}
@@ -244,7 +259,7 @@ export default function App() {
       <LegalAndHelpModals
         activeModal={activeModal}
         onClose={() => setActiveModal(null)}
-        deferredPrompt={deferredPrompt}
+        // deferredPrompt removed from props - using global variable instead
         language={language}
       />
     </div>
