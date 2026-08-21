@@ -26,9 +26,51 @@ window.addEventListener('beforeinstallprompt', (e: any) => {
 });
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('sales');
+  // Initialize activeTab from URL path on first render
+  const getInitialTab = (): ActiveTab => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path === '/course') return 'course';
+      if (path === '/dashboard') return 'dashboard';
+      if (path === '/dossier') return 'dossier';
+      if (path === '/simulator') return 'simulator';
+      if (path === '/assessment') return 'assessment';
+      if (path === '/prompts') return 'prompts';
+      if (path === '/bonuses') return 'bonuses';
+    }
+    return 'sales';
+  };
+
+  const [activeTab, setActiveTab] = useState<ActiveTab>(getInitialTab);
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const [isTakingQuiz, setIsTakingQuiz] = useState<boolean>(false);
+
+  // Sync URL with activeTab changes
+  useEffect(() => {
+    const pathMap: Record<ActiveTab, string> = {
+      sales: '/',
+      dashboard: '/dashboard',
+      dossier: '/dossier',
+      simulator: '/simulator',
+      assessment: '/assessment',
+      course: '/course',
+      prompts: '/prompts',
+      bonuses: '/bonuses',
+    };
+    const newPath = pathMap[activeTab];
+    if (window.location.pathname !== newPath) {
+      window.history.pushState(null, '', newPath);
+    }
+  }, [activeTab]);
+
+  // Handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      setActiveTab(getInitialTab());
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // Theme Mode: Default to clean high-contrast 'light' mode
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
