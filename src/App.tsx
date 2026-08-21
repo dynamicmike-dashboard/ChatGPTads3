@@ -84,54 +84,7 @@ export default function App() {
     }
   });
 
-  // Payment gate: $72 for full access, $297 for course-only
-  const [paymentStatus, setPaymentStatus] = useState<'free' | 'full' | 'course'>('free');
-
-  // Dev/Admin preview mode password (for testing)
-  const [isPreviewMode, setIsPreviewMode] = useState<boolean>(false);
-  const [previewPassword, setPreviewPassword] = useState<string>('');
-
-  const PREVIEW_PASSWORD = 'chatgpt-ads-2026';
-
-  // Check for preview mode
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('chatgpt_ads_preview_mode');
-      if (saved === 'true') setIsPreviewMode(true);
-    } catch (e) {}
-  }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('chatgpt_ads_preview_mode', isPreviewMode.toString());
-    } catch (e) {}
-  }, [isPreviewMode]);
-
-  // Payment check handler
-  const handlePurchaseSuccess = (sessionId: string, plan: 'full' | 'course') => {
-    setHasPurchased(true);
-    setPaymentStatus(plan);
-    try {
-      localStorage.setItem('chatgpt_ads_has_purchased', 'true');
-      localStorage.setItem('chatgpt_ads_payment_status', plan);
-      localStorage.setItem('chatgpt_ads_session_id', sessionId);
-    } catch (err) {
-      console.error(err);
-    }
-    setActiveModal(null);
-    setActiveTab('course');
-  };
-
-  // Toggle preview mode
-  const handleTogglePreview = (password?: string) => {
-    if (password === PREVIEW_PASSWORD) {
-      setIsPreviewMode(!isPreviewMode);
-      setPreviewPassword('');
-    } else if (password) {
-      setPreviewPassword(password);
-      setTimeout(() => setPreviewPassword(''), 3000);
-    }
-  };
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   // Hook into PWA beforeinstallprompt event
   useEffect(() => {
@@ -165,7 +118,17 @@ export default function App() {
     setActiveTab('assessment');
   };
 
-  
+  const handlePurchaseSuccess = (sessionId: string) => {
+    setHasPurchased(true);
+    try {
+      localStorage.setItem('chatgpt_ads_has_purchased', 'true');
+      localStorage.setItem('chatgpt_ads_session_id', sessionId);
+    } catch (err) {
+      console.error(err);
+    }
+    setActiveModal(null);
+    setActiveTab('course');
+  };
 
   return (
     <div className={`min-h-screen flex flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-white transition-colors duration-150 ${themeMode === 'dark' ? 'dark' : ''}`}>
