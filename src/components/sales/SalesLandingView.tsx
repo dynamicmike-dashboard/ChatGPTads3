@@ -26,13 +26,21 @@ interface SalesLandingViewProps {
   onOpenCheckout: () => void;
   onOpenDossier?: () => void;
   onOpenSimulator?: () => void;
+  language?: 'en' | 'es';
+  showTeasers?: boolean;
+  onUpgrade?: () => void;
+  paymentStatus?: 'free' | 'full' | 'course';
 }
 
 export const SalesLandingView: React.FC<SalesLandingViewProps> = ({
   onStartAssessment,
   onOpenCheckout,
   onOpenDossier,
-  onOpenSimulator
+  onOpenSimulator,
+  language = 'en',
+  showTeasers = false,
+  onUpgrade,
+  paymentStatus = 'free'
 }) => {
   const [expandedLesson, setExpandedLesson] = useState<number | null>(1);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(0);

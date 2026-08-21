@@ -18,7 +18,10 @@ import {
   Code2, 
   Check, 
   BookOpen, 
-  Printer
+  Printer,
+  Lock,
+  ArrowRight as ArrowRightIcon,
+  Unlock
 } from 'lucide-react';
 
 interface ExecutiveDossierViewProps {
@@ -26,15 +29,47 @@ interface ExecutiveDossierViewProps {
   onOpenSimulator: () => void;
   onOpenCourse: () => void;
   onOpenCheckout: () => void;
+  language?: 'en' | 'es';
+  showTeaser?: boolean;
+  onUpgrade?: () => void;
 }
 
 export const ExecutiveDossierView: React.FC<ExecutiveDossierViewProps> = ({
   onStartAssessment,
   onOpenSimulator,
   onOpenCourse,
-  onOpenCheckout
+  onOpenCheckout,
+  language = 'en',
+  showTeaser = false,
+  onUpgrade
 }) => {
   const [activeSection, setActiveSection] = useState<'overview' | 'economics' | 'risks' | 'roadmap' | 'advantages'>('overview');
+
+  if (showTeaser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 sm:p-8 text-center text-white">
+            <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-indigo-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <h2 className="text-2xl font-bold mb-2">Executive Strategy Dossier</h2>
+            <p className="text-indigo-100 max-w-md mx-auto">Deep-dive strategic guide with market intel, budget frameworks, and agency arbitrage playbook.</p>
+          </div>
+          <div className="p-6 sm:p-8 text-center">
+            <p className="text-slate-600 dark:text-slate-400 mb-6">Unlock the full Executive Dossier with market timing asymmetry, competitive intel, budget frameworks, and agency arbitrage playbook.</p>
+            <button
+              onClick={() => onUpgrade?.()}
+              className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl text-base font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 hover:scale-[1.02] transition-all cursor-pointer"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+              Upgrade to Full Access - $72
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-10">

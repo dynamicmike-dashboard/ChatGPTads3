@@ -13,7 +13,6 @@ import { PromptVaultView } from './components/course/PromptVaultView';
 import { BonusesView } from './components/bonuses/BonusesView';
 import { StripeCheckoutModal } from './components/checkout/StripeCheckoutModal';
 import { LegalAndHelpModals } from './components/modals/LegalAndHelpModals';
-import { TeaserWrapper } from './components/sales/TeaserWrapper';
 
 // deferredPrompt MUST be a global variable for Service Worker access
 // React state is scoped to the component and causes "deferredPrompt is not defined" errors
@@ -161,35 +160,28 @@ export default function App() {
     }
   };
 
-  // Helper: check if user can access a tab
-  const canAccessTab = (tab: ActiveTab): boolean => {
+  // Helper: check if user can access a tab's FULL content
+  const canAccessContent = (tab: ActiveTab): boolean => {
     if (isPreviewMode) return true;
     if (paymentStatus === 'full') {
-      // Full access: all tabs except course (which is separate product)
+      // Full access ($72): all tabs except course (separate product)
       return tab !== 'course';
     }
     if (paymentStatus === 'course') {
-      // Course access: course, prompts, assessment
+      // Course access ($297): course, prompts, assessment
       return ['course', 'prompts', 'assessment'].includes(tab);
     }
-    // Free users: only sales and assessment (for taking quiz)
-    return ['sales', 'assessment'].includes(tab);
+    // Free users: only assessment content accessible (for taking quiz)
+    return tab === 'assessment';
   };
 
-  // Helper: render tab with teaser for free users
-  const renderTab = (tab: ActiveTab, children: React.ReactNode) => {
-    if (canAccessTab(tab)) {
-      return children;
-    }
-    // Free users see teaser
-    return (
-      <TeaserWrapper 
-        tab={tab} 
-        paymentStatus={paymentStatus}
-        onUpgrade={() => setActiveModal('checkout')}
-        language={language}
-      />
-    );
+  // For free users: show teaser instead of content
+  const showTeaser = (tab: ActiveTab): boolean => {
+    if (isPreviewMode) return false;
+    if (paymentStatus === 'full' && tab !== 'course') return false;
+    if (paymentStatus === 'course' && ['course', 'prompts', 'assessment'].includes(tab)) return false;
+    // Free users always see teaser except for assessment (they can take it)
+    return tab !== 'assessment';
   };
 
   return (
@@ -210,7 +202,7 @@ export default function App() {
 
       {/* Main App Content View Switcher */}
       <main className="flex-1">
-        {/* TAB 1: SALES LANDING PAGE - Always visible */}
+        {/* TAB 1: SALES LANDING PAGE - Always visible, shows teasers for free users */}
         {activeTab === 'sales' && (
           <SalesLandingView
             onStartAssessment={handleStartAssessment}
@@ -218,10 +210,13 @@ export default function App() {
             onOpenDossier={() => setActiveTab('dossier')}
             onOpenSimulator={() => setActiveTab('simulator')}
             language={language}
+            showTeasers={paymentStatus === 'free'}
+            onUpgrade={() => setActiveModal('checkout')}
+            paymentStatus={paymentStatus}
           />
         )}
 
-        {/* TAB 2: FULL ACCESS DASHBOARD - For $72 payers (sales page duplicate without course upsell) */}
+        {/* TAB: FULL ACCESS DASHBOARD - For $72 payers (cloned sales page, no course upsell, all content unlocked) */}
         {activeTab === 'dashboard' && (
           <FullAccessDashboard
             onOpenDossier={() => setActiveTab('dossier')}
@@ -235,20 +230,26 @@ export default function App() {
         )}
 
         {/* TAB 2: EXECUTIVE DOSSIER & STRATEGIC GUIDE */}
-        {activeTab === 'dossier' && renderTab('dossier', (
+        {activeTab === 'dossier' && (
           <ExecutiveDossierView
             onStartAssessment={handleStartAssessment}
             onOpenSimulator={() => setActiveTab('simulator')}
             onOpenCourse={() => setActiveTab('course')}
             onOpenCheckout={() => setActiveModal('checkout')}
             language={language}
+            showTeaser={showTeaser('dossier')}
+            onUpgrade={() => setActiveModal('checkout')}
           />
-        ))}
+        )}
 
         {/* TAB 3: LIVE CHATGPT AD PREVIEW SIMULATOR */}
-        {activeTab === 'simulator' && renderTab('simulator', (
-          <AdPreviewSimulator language={language} />
-        ))}
+        {activeTab === 'simulator' && (
+          <AdPreviewSimulator 
+            language={language} 
+            showTeaser={showTeaser('simulator')}
+            onUpgrade={() => setActiveModal('checkout')}
+          />
+        )}
 
         {/* TAB 4: INTERACTIVE ASSESSMENT / DIAGNOSTIC REPORT - Always accessible for quiz takers */}
         {activeTab === 'assessment' && (
@@ -276,23 +277,55 @@ export default function App() {
         )}
 
         {/* TAB 5: 12-PART MASTERCLASS DASHBOARD - Only for $297 course buyers */}
-        {activeTab === 'course' && renderTab('course', (
-          <CourseDashboard
-            onOpenPromptVault={() => setActiveTab('prompts')}
-            onOpenBonuses={() => setActiveTab('bonuses')}
-            language={language}
+        {activeTab === 'course' && (
+          showTeaser('course') ? (
+            <div className="min-h-screen flex items-center justify-center p-4">
+              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div className="bg-gradient-to-r from-purple-500 to-indigo-600 p-6 sm:p-8 text-center text-white">
+                  <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>
+                  </div>
+                  <h2 className="text-2xl font-bold mb-2">12-Part Masterclass</h2>
+                  <p className="text-purple-100 max-w-md mx-auto">This content is part of the $297 Masterclass. Upgrade to unlock all 12 modules.</p>
+                </div>
+                <div className="p-6 sm:p-8 text-center">
+                  <p className="text-slate-600 dark:text-slate-400 mb-6">The 12-part masterclass includes 12 modules, 60 advanced prompts, worksheets, and progress tracking.</p>
+                  <button
+                    onClick={() => setActiveModal('checkout')}
+                    className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl text-base font-bold bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25 hover:scale-[1.02] transition-all cursor-pointer"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                    Upgrade to Course Access - $297
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <CourseDashboard
+              onOpenPromptVault={() => setActiveTab('prompts')}
+              onOpenBonuses={() => setActiveTab('bonuses')}
+              language={language}
+            />
+          )
+        )}
+
+        {/* TAB 6: MASTER PROMPT VAULT & GENERATOR */}
+        {activeTab === 'prompts' && (
+          <PromptVaultView 
+            language={language} 
+            showTeaser={showTeaser('prompts')}
+            onUpgrade={() => setActiveModal('checkout')}
           />
-        ))}
+        )}
 
-        {/* TAB 6: MASTER PROMPT VAULT & GENERATOR - $72 or $297 */}
-        {activeTab === 'prompts' && renderTab('prompts', (
-          <PromptVaultView language={language} />
-        ))}
-
-        {/* TAB 7: UNLOCKED BONUS SUITE - $72 full access only */}
-        {activeTab === 'bonuses' && renderTab('bonuses', (
-          <BonusesView language={language} />
-        ))}
+        {/* TAB 7: UNLOCKED BONUS SUITE */}
+        {activeTab === 'bonuses' && (
+          <BonusesView 
+            language={language} 
+            showTeaser={showTeaser('bonuses')}
+            onUpgrade={() => setActiveModal('checkout')}
+          />
+        )}
       </main>
 
       {/* App Footer with Modal Triggers */}

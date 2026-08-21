@@ -14,11 +14,24 @@ import {
   Terminal,
   Zap,
   Globe2,
-  Share2
+  Share2,
+  Lock,
+  Unlock,
+  Zap as ZapIcon
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
-export const AdPreviewSimulator: React.FC = () => {
+interface AdPreviewSimulatorProps {
+  language?: 'en' | 'es';
+  showTeaser?: boolean;
+  onUpgrade?: () => void;
+}
+
+export const AdPreviewSimulator: React.FC<AdPreviewSimulatorProps> = ({
+  language = 'en',
+  showTeaser = false,
+  onUpgrade
+}) => {
   // Simulator State
   const [userQuery, setUserQuery] = useState('What is the best way to generate B2B pipeline without spending $10k on cold outbound SDRs?');
   const [brandName, setBrandName] = useState('GrowthPilot AI');
@@ -58,6 +71,32 @@ export const AdPreviewSimulator: React.FC = () => {
     setAdDescription(h.description);
     setUserQuery(h.query);
   };
+
+  if (showTeaser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <div className="bg-gradient-to-r from-cyan-500 to-teal-600 p-6 sm:p-8 text-center text-white">
+            <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
+              <ZapIcon className="w-8 h-8 text-cyan-600" />
+            </div>
+            <h2 className="text-2xl font-bold mb-2">Live Ad Preview Simulator</h2>
+            <p className="text-cyan-100 max-w-md mx-auto">See exactly how your ads appear in real ChatGPT conversations. Real-time preview, instant testing.</p>
+          </div>
+          <div className="p-6 sm:p-8 text-center">
+            <p className="text-slate-600 dark:text-slate-400 mb-6">Unlock the Live Ad Preview Simulator to test ad copy in real ChatGPT conversations with instant intent triggers and follow-up prompts.</p>
+            <button
+              onClick={() => onUpgrade?.()}
+              className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl text-base font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-600/25 hover:scale-[1.02] transition-all cursor-pointer"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2-2v6a2 2 0 002 2h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 002 2v6a2 2 0 002 2z"/></svg>
+              Upgrade to Full Access - $72
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleTestWebhook = () => {
     setWebhookStatus('testing');

@@ -1,9 +1,19 @@
 import React, { useState } from 'react';
 import { BONUSES, BonusItem } from '../../data/bonusData';
-import { Gift, CheckCircle2, Copy, Check, Printer, Sparkles, FileText, ChevronRight } from 'lucide-react';
+import { Gift, CheckCircle2, Copy, Check, Printer, Sparkles, FileText, ChevronRight, Lock, Unlock, Gift as GiftIcon } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
-export const BonusesView: React.FC = () => {
+interface BonusesViewProps {
+  language?: 'en' | 'es';
+  showTeaser?: boolean;
+  onUpgrade?: () => void;
+}
+
+export const BonusesView: React.FC<BonusesViewProps> = ({
+  language = 'en',
+  showTeaser = false,
+  onUpgrade
+}) => {
   const [activeBonusId, setActiveBonusId] = useState<string>(BONUSES[0].id);
   const [copiedSectionIdx, setCopiedSectionIdx] = useState<number | null>(null);
   const [checkedAuditItems, setCheckedAuditItems] = useState<Record<string, boolean>>({});
@@ -26,6 +36,32 @@ export const BonusesView: React.FC = () => {
   const handlePrint = () => {
     window.print();
   };
+
+  if (showTeaser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <div className="bg-gradient-to-r from-rose-500 to-pink-600 p-6 sm:p-8 text-center text-white">
+            <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
+              <GiftIcon className="w-8 h-8 text-rose-600" />
+            </div>
+            <h2 className="text-2xl font-bold mb-2">Unlocked Bonus Suite</h2>
+            <p className="text-rose-100 max-w-md mx-auto">3 high-value bonuses: 18-Point Scorecard, Prompt-to-Launch Swipe File, Agency Proposal Kit.</p>
+          </div>
+          <div className="p-6 sm:p-8 text-center">
+            <p className="text-slate-600 dark:text-slate-400 mb-6">Unlock all 3 bonuses worth $991: 18-Point Readiness Scorecard, Prompt-to-Launch Swipe File, and Agency Client Proposal & Retainer Kit.</p>
+            <button
+              onClick={() => onUpgrade?.()}
+              className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl text-base font-bold bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/25 hover:scale-[1.02] transition-all cursor-pointer"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2-2v6a2 2 0 002 2h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 002 2v6a2 2 0 002 2z"/></svg>
+              Upgrade to Full Access - $72
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
