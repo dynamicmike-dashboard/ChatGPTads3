@@ -134,7 +134,7 @@ const tabTeasers: Record<ActiveTab, {
     title: 'Unlocked Bonus Suite (3 Bonuses)',
     description: 'High-value swipe files and agency kits - normally sold separately.',
     features: [
-      'Bonus #1: 18-Point Readiness Scorecard ($197 value)',
+      'Bonus #1: 18-Point Readiness Scorecard ($297 value)',
       'Bonus #2: Prompt-to-Launch Swipe File ($297 value)',
       'Bonus #3: Agency Client Proposal Kit ($497 value)',
       'Total bonus value: $991 - free with full access',

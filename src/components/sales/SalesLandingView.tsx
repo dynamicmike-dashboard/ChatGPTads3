@@ -147,7 +147,7 @@ export const SalesLandingView: React.FC<SalesLandingViewProps> = ({
             onClick={onOpenCheckout}
             className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-2xl text-base font-bold bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 shadow-md transition-all cursor-pointer"
           >
-            Unlock 12-Part Masterclass ($197) <ArrowRight className="w-4 h-4" />
+            Unlock 12-Part Masterclass ($297) <ArrowRight className="w-4 h-4" />
           </button>
         </div>
 
@@ -461,7 +461,7 @@ export const SalesLandingView: React.FC<SalesLandingViewProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
               <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase block mb-1">
-                Bonus #1 ($197 Value)
+                Bonus #1 ($297 Value)
               </span>
               <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2">18-Point ChatGPT Ads Readiness Scorecard</h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -539,7 +539,7 @@ export const SalesLandingView: React.FC<SalesLandingViewProps> = ({
 
           <div className="flex items-center justify-center gap-3 mb-6">
             <span className="text-slate-400 line-through text-lg font-mono">$497</span>
-            <span className="text-4xl sm:text-5xl font-black text-emerald-600 dark:text-emerald-400 font-mono">$197</span>
+            <span className="text-4xl sm:text-5xl font-black text-emerald-600 dark:text-emerald-400 font-mono">$297</span>
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">One-Time Payment</span>
           </div>
 

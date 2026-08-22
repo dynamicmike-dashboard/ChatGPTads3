@@ -270,7 +270,7 @@ ${result.risks.map((r, i) => `• ${r}`).join('\n')}
               onClick={onOpenCheckout}
               className="px-6 py-3 rounded-xl text-xs sm:text-sm font-black bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition-all cursor-pointer flex items-center gap-1.5"
             >
-              Enroll in Full Masterclass ($197) <ArrowRight className="w-4 h-4" />
+              Enroll in Full Masterclass ($297) <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>

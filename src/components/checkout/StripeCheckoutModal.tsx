@@ -74,12 +74,12 @@ export const StripeCheckoutModal: React.FC<StripeCheckoutModalProps> = ({
               <span className="text-sm font-bold text-slate-900 dark:text-white block">Full Masterclass Lifetime License</span>
               <span className="text-xs text-slate-500">12 Modules + 60 Prompts + 3 Unlocked Bonuses</span>
             </div>
-            <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">$197.00</span>
+            <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">$297.00</span>
           </div>
 
           <div className="border-t border-slate-200 dark:border-slate-800 pt-2.5 mt-2.5 flex justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
             <span>Total Due Today</span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-mono">$197.00 USD</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-mono">$297.00 USD</span>
           </div>
         </div>
 
@@ -153,7 +153,7 @@ export const StripeCheckoutModal: React.FC<StripeCheckoutModalProps> = ({
               <>Processing Encrypted Payment via Stripe...</>
             ) : (
               <>
-                <Lock className="w-4 h-4" /> Pay $197 & Instant Redirect to Dashboard
+                <Lock className="w-4 h-4" /> Pay $297 & Instant Redirect to Dashboard
               </>
             )}
           </button>

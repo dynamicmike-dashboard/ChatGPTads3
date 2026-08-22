@@ -20,7 +20,7 @@ export const translations = {
     },
     installApp: 'Install App',
     licenseActive: 'License Active',
-    enroll: 'Enroll $197',
+    enroll: 'Enroll $297',
     
     // Footer
     footerBrand: 'CHATGPT ADS PLAYBOOK',
@@ -52,7 +52,7 @@ export const translations = {
     heroTitleEnd: ' Dominance',
     heroSubtitle: 'Conversational ads are expanding rapidly across the US, UK, and global markets. Discover how to evaluate benefits, budget CPCs, avoid policy traps, and deploy high-converting funnels before the auction gets crowded.',
     startAssessment: 'Start Free Readiness Diagnostic',
-    unlockCourse: 'Unlock 12-Part Masterclass ($197)',
+    unlockCourse: 'Unlock 12-Part Masterclass ($297)',
     pwaAccess: 'Instant PWA Access',
     promptsIncluded: '60 Advanced Prompts Included',
     moneyBack: '30-Day Money-Back Guarantee',
@@ -130,7 +130,7 @@ export const translations = {
     readyToImplement: 'Ready to Implement Your Custom Action Plan?',
     bonusesDesc: 'Unlock the 12-module masterclass, 60 battle-tested copy prompts, and client retainer kit to launch your high-converting conversational ad funnel.',
     viewBonuses: 'View Unlocked Bonuses',
-    enrollMasterclass: 'Enroll in Full Masterclass ($197)',
+    enrollMasterclass: 'Enroll in Full Masterclass ($297)',
     pipelineIntegration: 'Automated Pipeline Integration',
     emailAudit: 'Email Me My Full Audit & Action Plan',
     emailDesc: 'Sends an instant branded summary with custom tags to your email and CRM.',
@@ -192,7 +192,7 @@ export const translations = {
     },
     installApp: 'Instalar App',
     licenseActive: 'Licencia Activa',
-    enroll: 'Inscribirse $197',
+    enroll: 'Inscribirse $297',
     
     // Footer
     footerBrand: 'CHATGPT ADS PLAYBOOK',
@@ -224,7 +224,7 @@ export const translations = {
     heroTitleEnd: ' Dominio',
     heroSubtitle: 'Los anuncios conversacionales se expanden rápidamente en EE. UU., Reino Unido y mercados globales. Descubra cómo evaluar beneficios, presupuestar CPCs, evitar trampas de políticas y desplegar embudos de alta conversión antes de que la subasta se sature.',
     startAssessment: 'Iniciar Diagnóstico Gratuito',
-    unlockCourse: 'Desbloquear Masterclass de 12 Partes ($197)',
+    unlockCourse: 'Desbloquear Masterclass de 12 Partes ($297)',
     pwaAccess: 'Acceso Instantáneo PWA',
     promptsIncluded: '60 Prompts Avanzados Incluidos',
     moneyBack: 'Garantía de 30 Días',
@@ -302,7 +302,7 @@ export const translations = {
     readyToImplement: '¿Listo para Implementar Su Plan de Acción Personalizado?',
     bonusesDesc: 'Desbloquee el masterclass de 12 módulos, 60 prompts de copia probados en batalla y kit de retainer de clientes para lanzar su embudo de anuncios conversacionales de alta conversión.',
     viewBonuses: 'Ver Bonos Desbloqueados',
-    enrollMasterclass: 'Inscribirse en Masterclass Completo ($197)',
+    enrollMasterclass: 'Inscribirse en Masterclass Completo ($297)',
     pipelineIntegration: 'Integración Automatizada de Pipeline',
     emailAudit: 'Envíeme Mi Auditoría Completa y Plan de Acción',
     emailDesc: 'Envía un resumen de marca instantáneo con etiquetas personalizadas a su email y CRM.',
