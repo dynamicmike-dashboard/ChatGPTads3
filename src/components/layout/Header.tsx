@@ -221,7 +221,7 @@ export const Header: React.FC<HeaderProps> = ({
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-extrabold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Enroll $297</span>
+              <span>Enroll $72</span>
             </button>
           )}
         </div>

@@ -29,6 +29,7 @@ interface AssessmentResultViewProps {
   onNavigateToCourse: () => void;
   onNavigateToBonuses: () => void;
   onOpenCheckout: () => void;
+  onOpenCheckoutCourse?: () => void;
 }
 
 export const AssessmentResultView: React.FC<AssessmentResultViewProps> = ({
@@ -36,7 +37,8 @@ export const AssessmentResultView: React.FC<AssessmentResultViewProps> = ({
   onRetake,
   onNavigateToCourse,
   onNavigateToBonuses,
-  onOpenCheckout
+  onOpenCheckout,
+  onOpenCheckoutCourse
 }) => {
   const [copiedReport, setCopiedReport] = useState(false);
   
@@ -242,8 +244,8 @@ ${result.risks.map((r, i) => `• ${r}`).join('\n')}
         </div>
       </div>
 
-      {/* Unlocked Bonuses & Course Next Step Banner */}
-      <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-slate-50 dark:from-emerald-950/40 dark:via-slate-900 dark:to-slate-950 border border-emerald-200 dark:border-emerald-500/40 rounded-3xl p-6 sm:p-10 shadow-xl">
+      {/* Unlocked Bonuses & Course Next Step Banner - Dual Upsell */}
+      <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-slate-50 dark:from-emerald-950/40 dark:via-slate-900 dark:to-slate-950 border border-emerald-200 dark:border-emerald-500/40 rounded-3xl p-6 sm:p-10 shadow-xl space-y-6">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
           <div className="space-y-2 text-center lg:text-left">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/40">
@@ -253,7 +255,7 @@ ${result.risks.map((r, i) => `• ${r}`).join('\n')}
               Ready to Implement Your Custom Action Plan?
             </h3>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed">
-              Unlock the 12-module masterclass, 60 battle-tested copy prompts, and client retainer kit to launch your high-converting conversational ad funnel.
+              Your report is ready to download. Upgrade to launch your high-converting conversational ad funnel — choose Full Access or the Advanced Course.
             </p>
           </div>
 
@@ -265,12 +267,28 @@ ${result.risks.map((r, i) => `• ${r}`).join('\n')}
             >
               View Unlocked Bonuses
             </button>
-            <button
-              type="button"
-              onClick={onOpenCheckout}
-              className="px-6 py-3 rounded-xl text-xs sm:text-sm font-black bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition-all cursor-pointer flex items-center gap-1.5"
-            >
-              Enroll in Full Masterclass ($297) <ArrowRight className="w-4 h-4" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-500/30 rounded-2xl p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-500/10 flex items-center justify-center"><Unlock className="w-4 h-4 text-emerald-600" /></div>
+              <h4 className="font-bold text-slate-900 dark:text-white text-sm">Full Masterclass Lifetime License</h4>
+            </div>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">12 Modules + 60 Prompts + 3 Unlocked Bonuses — instant PWA access, lifetime updates.</p>
+            <button type="button" onClick={onOpenCheckout} className="w-full py-3 rounded-xl text-sm font-black bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-1.5">
+              Enroll Full Access — $72 <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-500/30 rounded-2xl p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-500/10 flex items-center justify-center"><Sparkles className="w-4 h-4 text-purple-600" /></div>
+              <h4 className="font-bold text-slate-900 dark:text-white text-sm">12-Part Advanced Course</h4>
+            </div>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">Advanced implementation, deep dives, worksheets & certification — separate purchase.</p>
+            <button type="button" onClick={() => (onOpenCheckoutCourse || onOpenCheckout)()} className="w-full py-3 rounded-xl text-sm font-black bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/20 flex items-center justify-center gap-1.5">
+              Enroll Advanced Course — $297 <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>

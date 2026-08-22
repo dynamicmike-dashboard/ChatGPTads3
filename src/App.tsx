@@ -13,6 +13,7 @@ import { PromptVaultView } from './components/course/PromptVaultView';
 import { BonusesView } from './components/bonuses/BonusesView';
 import { StripeCheckoutModal } from './components/checkout/StripeCheckoutModal';
 import { LegalAndHelpModals } from './components/modals/LegalAndHelpModals';
+import { GHLLeadCapture } from './components/assessment/GHLLeadCapture';
 
 // deferredPrompt MUST be a global variable for Service Worker access
 // React state is scoped to the component and causes "deferredPrompt is not defined" errors
@@ -138,6 +139,16 @@ export default function App() {
     }
   });
 
+  const [hasLeadCaptured, setHasLeadCaptured] = useState<boolean>(() => {
+    try { return !!localStorage.getItem('chatgpt_ads_lead'); } catch { return false; }
+  });
+  const [checkoutPlan, setCheckoutPlan] = useState<'full' | 'course'>('full');
+
+  const openCheckout = (plan: 'full' | 'course' = 'full') => {
+    setCheckoutPlan(plan);
+    setActiveModal('checkout');
+  };
+
   // Payment gate: 'free' | 'full' ($72) | 'course' ($297)
   const [paymentStatus, setPaymentStatus] = useState<'free' | 'full' | 'course'>('free');
 
@@ -234,7 +245,7 @@ export default function App() {
         setActiveTab={setActiveTab}
         onOpenModal={(m) => setActiveModal(m)}
         hasPurchased={hasPurchased}
-        onOpenCheckout={() => setActiveModal('checkout')}
+        onOpenCheckout={() => openCheckout('full')}
         themeMode={themeMode}
         onToggleTheme={toggleTheme}
         language={language}
@@ -248,12 +259,12 @@ export default function App() {
         {activeTab === 'sales' && (
           <SalesLandingView
             onStartAssessment={handleStartAssessment}
-            onOpenCheckout={() => setActiveModal('checkout')}
+            onOpenCheckout={() => openCheckout('course')}
             onOpenDossier={() => setActiveTab('dossier')}
             onOpenSimulator={() => setActiveTab('simulator')}
             language={language}
             showTeasers={paymentStatus === 'free'}
-            onUpgrade={() => setActiveModal('checkout')}
+            onUpgrade={() => openCheckout('full')}
             paymentStatus={paymentStatus}
           />
         )}
@@ -266,7 +277,7 @@ export default function App() {
             onOpenAssessment={() => setActiveTab('assessment')}
             onOpenPrompts={() => setActiveTab('prompts')}
             onOpenBonuses={() => setActiveTab('bonuses')}
-            onOpenCheckout={() => setActiveModal('checkout')}
+            onOpenCheckout={() => openCheckout('course')}
             language={language}
           />
         )}
@@ -277,10 +288,10 @@ export default function App() {
             onStartAssessment={handleStartAssessment}
             onOpenSimulator={() => setActiveTab('simulator')}
             onOpenCourse={() => setActiveTab('course')}
-            onOpenCheckout={() => setActiveModal('checkout')}
+            onOpenCheckout={() => openCheckout('full')}
             language={language}
             showTeaser={showTeaser('dossier')}
-            onUpgrade={() => setActiveModal('checkout')}
+            onUpgrade={() => openCheckout('full')}
           />
         )}
 
@@ -289,11 +300,11 @@ export default function App() {
           <AdPreviewSimulator 
             language={language} 
             showTeaser={showTeaser('simulator')}
-            onUpgrade={() => setActiveModal('checkout')}
+            onUpgrade={() => openCheckout('full')}
           />
         )}
 
-        {/* TAB 4: INTERACTIVE ASSESSMENT / DIAGNOSTIC REPORT - Always accessible for quiz takers */}
+        {/* TAB 4: INTERACTIVE ASSESSMENT / DIAGNOSTIC REPORT - GHL gate then personalized report with download + dual upsell */}
         {activeTab === 'assessment' && (
           <div>
             {isTakingQuiz || !assessmentResult ? (
@@ -305,13 +316,26 @@ export default function App() {
                 }}
                 language={language}
               />
+            ) : !hasLeadCaptured ? (
+              <GHLLeadCapture
+                score={assessmentResult.totalScore}
+                bucket={assessmentResult.bucket}
+                language={language}
+                onCaptured={(data) => {
+                  try { localStorage.setItem('chatgpt_ads_lead', JSON.stringify({ ...data, score: assessmentResult.totalScore, bucket: assessmentResult.bucket })); } catch {}
+                  fetch('/api/ghl-lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, score: assessmentResult.totalScore, bucket: assessmentResult.bucket }) }).catch(()=>{});
+                  setHasLeadCaptured(true);
+                }}
+                onSkip={() => setHasLeadCaptured(true)}
+              />
             ) : (
               <AssessmentResultView
                 result={assessmentResult}
-                onRetake={handleRetakeAssessment}
+                onRetake={() => { setHasLeadCaptured(false); handleRetakeAssessment(); }}
                 onNavigateToCourse={() => setActiveTab('course')}
                 onNavigateToBonuses={() => setActiveTab('bonuses')}
-                onOpenCheckout={() => setActiveModal('checkout')}
+                onOpenCheckout={() => openCheckout('full')}
+                onOpenCheckoutCourse={() => openCheckout('course')}
                 language={language}
               />
             )}
@@ -333,7 +357,7 @@ export default function App() {
                 <div className="p-6 sm:p-8 text-center">
                   <p className="text-slate-600 dark:text-slate-400 mb-6">The 12-part masterclass includes 12 modules, 60 advanced prompts, worksheets, and progress tracking.</p>
                   <button
-                    onClick={() => setActiveModal('checkout')}
+                    onClick={() => openCheckout('course')}
                     className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl text-base font-bold bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25 hover:scale-[1.02] transition-all cursor-pointer"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
@@ -356,7 +380,7 @@ export default function App() {
           <PromptVaultView 
             language={language} 
             showTeaser={showTeaser('prompts')}
-            onUpgrade={() => setActiveModal('checkout')}
+            onUpgrade={() => openCheckout('full')}
           />
         )}
 
@@ -365,7 +389,7 @@ export default function App() {
           <BonusesView 
             language={language} 
             showTeaser={showTeaser('bonuses')}
-            onUpgrade={() => setActiveModal('checkout')}
+            onUpgrade={() => openCheckout('full')}
           />
         )}
       </main>
@@ -373,12 +397,13 @@ export default function App() {
       {/* App Footer with Modal Triggers */}
       <Footer onOpenModal={(m) => setActiveModal(m)} language={language} paymentStatus={paymentStatus} />
 
-      {/* Stripe Checkout Modal */}
+      {/* Stripe Checkout Modal - $72 Full vs $297 Course */}
       <StripeCheckoutModal
         isOpen={activeModal === 'checkout'}
         onClose={() => setActiveModal(null)}
         onSuccess={handlePurchaseSuccess}
         language={language}
+        plan={checkoutPlan}
       />
 
       {/* Legal, User Manual, & Install Modals */}

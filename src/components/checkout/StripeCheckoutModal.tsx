@@ -6,13 +6,20 @@ interface StripeCheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (sessionId: string, plan?: 'full' | 'course') => void;
+  plan?: 'full' | 'course';
+  language?: 'en' | 'es';
 }
 
 export const StripeCheckoutModal: React.FC<StripeCheckoutModalProps> = ({
   isOpen,
   onClose,
-  onSuccess
+  onSuccess,
+  plan = 'full',
+  language = 'en'
 }) => {
+  const price = plan === 'course' ? '$297.00' : '$72.00';
+  const title = plan === 'course' ? 'Advanced Course' : 'Full Masterclass Lifetime License';
+  const subtitle = plan === 'course' ? '12 Advanced Modules • Deep-dive implementation' : '12 Modules + 60 Prompts + 3 Unlocked Bonuses';
   const [cardNumber, setCardNumber] = useState('4242 •••• •••• 4242');
   const [cardExp, setCardExp] = useState('12/28');
   const [cardCvc, setCardCvc] = useState('999');
@@ -36,7 +43,7 @@ export const StripeCheckoutModal: React.FC<StripeCheckoutModalProps> = ({
         origin: { y: 0.5 }
       });
 
-      onSuccess(fakeSessionId);
+      onSuccess(fakeSessionId, plan);
     }, 1000);
   };
 
@@ -71,15 +78,15 @@ export const StripeCheckoutModal: React.FC<StripeCheckoutModalProps> = ({
         <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 mb-6">
           <div className="flex justify-between items-start mb-2">
             <div>
-              <span className="text-sm font-bold text-slate-900 dark:text-white block">Full Masterclass Lifetime License</span>
-              <span className="text-xs text-slate-500">12 Modules + 60 Prompts + 3 Unlocked Bonuses</span>
+              <span className="text-sm font-bold text-slate-900 dark:text-white block">{title}</span>
+              <span className="text-xs text-slate-500">{subtitle}</span>
             </div>
-            <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">$297.00</span>
+            <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">{price}</span>
           </div>
 
           <div className="border-t border-slate-200 dark:border-slate-800 pt-2.5 mt-2.5 flex justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
             <span>Total Due Today</span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-mono">$297.00 USD</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-mono">{price} USD</span>
           </div>
         </div>
 
@@ -153,7 +160,7 @@ export const StripeCheckoutModal: React.FC<StripeCheckoutModalProps> = ({
               <>Processing Encrypted Payment via Stripe...</>
             ) : (
               <>
-                <Lock className="w-4 h-4" /> Pay $297 & Instant Redirect to Dashboard
+                <Lock className="w-4 h-4" /> Pay {price} & Instant Redirect to Dashboard
               </>
             )}
           </button>

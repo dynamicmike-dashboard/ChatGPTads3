@@ -20,7 +20,7 @@ export const translations = {
     },
     installApp: 'Install App',
     licenseActive: 'License Active',
-    enroll: 'Enroll $297',
+    enroll: 'Enroll $72',
     
     // Footer
     footerBrand: 'CHATGPT ADS PLAYBOOK',
@@ -130,7 +130,7 @@ export const translations = {
     readyToImplement: 'Ready to Implement Your Custom Action Plan?',
     bonusesDesc: 'Unlock the 12-module masterclass, 60 battle-tested copy prompts, and client retainer kit to launch your high-converting conversational ad funnel.',
     viewBonuses: 'View Unlocked Bonuses',
-    enrollMasterclass: 'Enroll in Full Masterclass ($297)',
+    enrollMasterclass: 'Enroll in Full Masterclass ($72)',
     pipelineIntegration: 'Automated Pipeline Integration',
     emailAudit: 'Email Me My Full Audit & Action Plan',
     emailDesc: 'Sends an instant branded summary with custom tags to your email and CRM.',
@@ -192,7 +192,7 @@ export const translations = {
     },
     installApp: 'Instalar App',
     licenseActive: 'Licencia Activa',
-    enroll: 'Inscribirse $297',
+    enroll: 'Inscribirse $72',
     
     // Footer
     footerBrand: 'CHATGPT ADS PLAYBOOK',
@@ -302,7 +302,7 @@ export const translations = {
     readyToImplement: '¿Listo para Implementar Su Plan de Acción Personalizado?',
     bonusesDesc: 'Desbloquee el masterclass de 12 módulos, 60 prompts de copia probados en batalla y kit de retainer de clientes para lanzar su embudo de anuncios conversacionales de alta conversión.',
     viewBonuses: 'Ver Bonos Desbloqueados',
-    enrollMasterclass: 'Inscribirse en Masterclass Completo ($297)',
+    enrollMasterclass: 'Inscribirse en Masterclass Completo ($72)',
     pipelineIntegration: 'Integración Automatizada de Pipeline',
     emailAudit: 'Envíeme Mi Auditoría Completa y Plan de Acción',
     emailDesc: 'Envía un resumen de marca instantáneo con etiquetas personalizadas a su email y CRM.',
