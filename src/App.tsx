@@ -14,6 +14,7 @@ import { BonusesView } from './components/bonuses/BonusesView';
 import { StripeCheckoutModal } from './components/checkout/StripeCheckoutModal';
 import { LegalAndHelpModals } from './components/modals/LegalAndHelpModals';
 import { GHLLeadCapture } from './components/assessment/GHLLeadCapture';
+import { ScrollHeroFrames } from './components/hero/ScrollHeroFrames';
 
 // deferredPrompt MUST be a global variable for Service Worker access
 // React state is scoped to the component and causes "deferredPrompt is not defined" errors
@@ -252,6 +253,9 @@ export default function App() {
         onToggleLanguage={toggleLanguage}
         paymentStatus={paymentStatus}
       />
+
+      {/* Scroll Movie Hero — 50 frames, scrub on scroll, above rest of webpage */}
+      <ScrollHeroFrames />
 
       {/* Main App Content View Switcher */}
       <main className="flex-1">
