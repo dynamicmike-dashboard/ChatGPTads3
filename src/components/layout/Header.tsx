@@ -34,6 +34,8 @@ interface HeaderProps {
   language: Language;
   onToggleLanguage: () => void;
   paymentStatus: 'free' | 'full' | 'course';
+  isLocked: boolean;
+  isFirstVisit: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -47,7 +49,9 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleTheme,
   language,
   onToggleLanguage,
-  paymentStatus
+  paymentStatus,
+  isLocked,
+  isFirstVisit
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-white/95 border-b border-slate-200 backdrop-blur-md">
@@ -93,17 +97,17 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('sales')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            disabled={isLocked}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${isLocked ? 'opacity-50 cursor-not-allowed' : ''} ${
               activeTab === 'sales'
                 ? 'bg-white text-emerald-700 shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
+            }`}>
             Overview
           </button>
 
           {/* Dashboard tab - only for full access users */}
-          {paymentStatus === 'full' && (
+          {paymentStatus === 'full' && !isLocked && (
             <button
               type="button"
               onClick={() => setActiveTab('dashboard')}
@@ -120,72 +124,74 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('dossier')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+            disabled={isLocked}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${isLocked ? 'opacity-50 cursor-not-allowed' : ''} ${
               activeTab === 'dossier'
                 ? 'bg-white text-emerald-700 shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
+            }`}>
             <Compass className="w-3 h-3 text-emerald-600" /> Executive Guide
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('simulator')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+            disabled={isLocked}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${isLocked ? 'opacity-50 cursor-not-allowed' : ''} ${
               activeTab === 'simulator'
                 ? 'bg-white text-cyan-700 shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
+            }`}>
             <Zap className="w-3 h-3 text-cyan-600" /> Ad Simulator
           </button>
 
+          {/* Diagnostic button - always clickable, glowing when locked */}
           <button
             type="button"
             onClick={() => setActiveTab('assessment')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'assessment'
-                ? 'bg-white text-emerald-700 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
+                ? 'bg-white text-emerald-700 shadow-sm ring-2 ring-emerald-500'
+                : isLocked
+                  ? 'bg-emerald-100 text-emerald-700 shadow-lg shadow-emerald-500/50 ring-2 ring-emerald-400 animate-pulse'
+                  : 'text-slate-600 hover:text-slate-900'
+            }`}>
             <Sparkles className="w-3 h-3 text-cyan-600" /> Diagnostic
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('course')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+            disabled={isLocked}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${isLocked ? 'opacity-50 cursor-not-allowed' : ''} ${
               activeTab === 'course'
                 ? 'bg-white text-emerald-700 shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
+            }`}>
             <BookOpen className="w-3 h-3 text-emerald-600" /> Masterclass (12)
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('prompts')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+            disabled={isLocked}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${isLocked ? 'opacity-50 cursor-not-allowed' : ''} ${
               activeTab === 'prompts'
                 ? 'bg-white text-cyan-700 shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
+            }`}>
             <Terminal className="w-3 h-3 text-cyan-600" /> Prompts (60)
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('bonuses')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+            disabled={isLocked}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${isLocked ? 'opacity-50 cursor-not-allowed' : ''} ${
               activeTab === 'bonuses'
                 ? 'bg-white text-indigo-700 shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
+            }`}>
             <Gift className="w-3 h-3 text-indigo-600" /> Bonuses
           </button>
         </nav>
@@ -228,57 +234,70 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Mobile Sub-Navigation Bar */}
-      <div className="xl:hidden flex items-center justify-around bg-slate-50 border-t border-slate-200 px-2 py-1.5 overflow-x-auto gap-1">
-        <button
-          type="button"
-          onClick={() => setActiveTab('sales')}
-          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'sales' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'}`}
-        >
-          Overview
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('dossier')}
-          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'dossier' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'}`}
-        >
-          Guide
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('simulator')}
-          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'simulator' ? 'text-cyan-700 bg-white shadow-sm' : 'text-slate-600'}`}
-        >
-          Simulator
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('assessment')}
-          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'assessment' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'}`}
-        >
-          Audit
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('course')}
-          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'course' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'}`}
-        >
-          Course (12)
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('prompts')}
-          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'prompts' ? 'text-cyan-700 bg-white shadow-sm' : 'text-slate-600'}`}
-        >
-          Prompts
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('bonuses')}
-          className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'bonuses' ? 'text-indigo-700 bg-white shadow-sm' : 'text-slate-600'}`}
-        >
-          Bonuses
-        </button>
-      </div>
+        <div className="xl:hidden flex items-center justify-around bg-slate-50 border-t border-slate-200 px-2 py-1.5 overflow-x-auto gap-1">
+          <button
+            type="button"
+            onClick={() => setActiveTab('sales')}
+            disabled={isLocked}
+            className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'sales' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'} ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            Overview
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('dossier')}
+            disabled={isLocked}
+            className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'dossier' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'} ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            Guide
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('simulator')}
+            disabled={isLocked}
+            className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'simulator' ? 'text-cyan-700 bg-white shadow-sm' : 'text-slate-600'} ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            Simulator
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('assessment')}
+            className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${
+              activeTab === 'assessment'
+                ? 'text-emerald-700 bg-white shadow-sm ring-2 ring-emerald-500'
+                : isLocked
+                  ? 'bg-emerald-100 text-emerald-700 shadow-lg shadow-emerald-500/50 ring-2 ring-emerald-400 animate-pulse'
+                  : 'text-slate-600'
+            }`}
+            disabled={false}
+          >
+            Audit
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('course')}
+            disabled={isLocked}
+            className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'course' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'} ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            Course (12)
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('prompts')}
+            disabled={isLocked}
+            className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'prompts' ? 'text-cyan-700 bg-white shadow-sm' : 'text-slate-600'} ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            Prompts
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('bonuses')}
+            disabled={isLocked}
+            className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'bonuses' ? 'text-indigo-700 bg-white shadow-sm' : 'text-slate-600'} ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            Bonuses
+          </button>
+        </div>
     </header>
   );
 };

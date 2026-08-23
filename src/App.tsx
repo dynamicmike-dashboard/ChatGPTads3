@@ -143,13 +143,23 @@ export default function App() {
   const [hasLeadCaptured, setHasLeadCaptured] = useState<boolean>(() => {
     try { return !!localStorage.getItem('chatgpt_ads_lead'); } catch { return false; }
   });
+  
+  // First-visit gate: lock everything except diagnostic until GHL capture
+  const [isFirstVisit, setIsFirstVisit] = useState<boolean>(() => {
+    try { return !localStorage.getItem('chatgpt_ads_visited'); } catch { return true; }
+  });
+  
+  // Lock state: true = only diagnostic accessible, false = full access
+  const [isLocked, setIsLocked] = useState<boolean>(() => {
+    try {
+      const visited = localStorage.getItem('chatgpt_ads_visited');
+      const lead = localStorage.getItem('chatgpt_ads_lead');
+      return !visited || !lead;
+    } catch { return true; }
+  });
+  
   const [checkoutPlan, setCheckoutPlan] = useState<'full' | 'course'>('full');
-
-  const openCheckout = (plan: 'full' | 'course' = 'full') => {
-    setCheckoutPlan(plan);
-    setActiveModal('checkout');
-  };
-
+  
   // Payment gate: 'free' | 'full' ($72) | 'course' ($297)
   const [paymentStatus, setPaymentStatus] = useState<'free' | 'full' | 'course'>('free');
 
@@ -178,6 +188,11 @@ export default function App() {
     setAssessmentResult(result);
     setIsTakingQuiz(false);
     setActiveTab('assessment');
+    // Mark as visited on completion
+    if (isFirstVisit) {
+      localStorage.setItem('chatgpt_ads_visited', 'true');
+      setIsFirstVisit(false);
+    }
     try {
       localStorage.setItem('chatgpt_ads_assessment_result', JSON.stringify(result));
     } catch (err) {
@@ -193,6 +208,12 @@ export default function App() {
   const handleStartAssessment = () => {
     setIsTakingQuiz(true);
     setActiveTab('assessment');
+    // Mark as visited on first assessment start
+    if (isFirstVisit) {
+      localStorage.setItem('chatgpt_ads_visited', 'true');
+      setIsFirstVisit(false);
+      setIsLocked(true);
+    }
   };
 
   const handlePurchaseSuccess = (sessionId: string, plan: 'full' | 'course') => {
@@ -217,6 +238,7 @@ export default function App() {
   // Helper: check if user can access a tab's FULL content
   const canAccessContent = (tab: ActiveTab): boolean => {
     if (isPreviewMode) return true;
+    if (isLocked) return tab === 'assessment'; // Only assessment when locked
     if (paymentStatus === 'full') {
       // Full access ($72): all tabs except course (separate product)
       return tab !== 'course';
@@ -232,6 +254,7 @@ export default function App() {
   // For free users: show teaser instead of content
   const showTeaser = (tab: ActiveTab): boolean => {
     if (isPreviewMode) return false;
+    if (isLocked) return tab !== 'assessment'; // Show teaser for everything except assessment when locked
     if (paymentStatus === 'full' && tab !== 'course') return false;
     if (paymentStatus === 'course' && ['course', 'prompts', 'assessment'].includes(tab)) return false;
     // Free users always see teaser except for assessment (they can take it)
@@ -252,6 +275,8 @@ export default function App() {
         language={language}
         onToggleLanguage={toggleLanguage}
         paymentStatus={paymentStatus}
+        isLocked={isLocked}
+        isFirstVisit={isFirstVisit}
       />
 
       {/* Scroll Movie Hero — 50 frames, scrub on scroll, above rest of webpage */}
@@ -329,8 +354,15 @@ export default function App() {
                   try { localStorage.setItem('chatgpt_ads_lead', JSON.stringify({ ...data, score: assessmentResult.totalScore, bucket: assessmentResult.bucket })); } catch {}
                   fetch('/api/ghl-lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, score: assessmentResult.totalScore, bucket: assessmentResult.bucket }) }).catch(()=>{});
                   setHasLeadCaptured(true);
+                  // Unlock the app after lead capture
+                  localStorage.setItem('chatgpt_ads_visited', 'true');
+                  setIsLocked(false);
                 }}
-                onSkip={() => setHasLeadCaptured(true)}
+                onSkip={() => {
+                  setHasLeadCaptured(true);
+                  localStorage.setItem('chatgpt_ads_visited', 'true');
+                  setIsLocked(false);
+                }}
               />
             ) : (
               <AssessmentResultView
