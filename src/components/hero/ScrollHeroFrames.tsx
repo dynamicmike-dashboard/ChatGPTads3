@@ -46,10 +46,13 @@ export const ScrollHeroFrames: React.FC = () => {
         <img
           ref={imgRef}
           src={FRAME_PATH(1)}
-          alt="ChatGPT Ads hero sequence"
+          alt="ChatGPT Ads hero sequence — 50 frames 1280×720"
           className="absolute inset-0 w-full h-full object-cover"
           loading="eager"
-          decoding="async"
+          // @ts-ignore
+          fetchPriority="high"
+          decoding="sync"
+          style={{ imageRendering: 'auto' as any }}
         />
         {/* Light scrim for readability — not dark mode heavy */}
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-slate-950/10 to-slate-50 dark:to-slate-950" />
@@ -57,19 +60,12 @@ export const ScrollHeroFrames: React.FC = () => {
 
         {/* Overlay copy — centered, light-theme friendly */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold bg-white/90 text-emerald-700 border border-emerald-200 shadow-sm backdrop-blur">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> SCROLL TO REVEAL — 50-FRAME SEQUENCE
-          </div>
           <h1 className="mt-4 text-3xl sm:text-5xl font-black tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
             ChatGPT Ads <span className="bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">Dominance</span>
           </h1>
           <p className="mt-3 max-w-2xl text-sm sm:text-base text-white/85 drop-shadow">
-            Scroll to scrub 50 frames — conversational intent → sponsored reveal. Light UI below, cinematic hero above.
+            Conversational intent → sponsored reveal. Scroll to explore the full 50-frame sequence.
           </p>
-          <div className="mt-4 flex items-center gap-2 text-[11px] font-mono text-white/70">
-            <span className="px-2 py-1 rounded bg-white/15 border border-white/20 backdrop-blur">Frame {String(frame).padStart(2,'0')}/50</span>
-            <span className="hidden sm:inline">Keep scrolling — content unlocks below</span>
-          </div>
         </div>
 
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/80">
