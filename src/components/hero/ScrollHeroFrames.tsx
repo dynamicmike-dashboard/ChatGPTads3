@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const FRAME_COUNT = 200;
+const FRAME_COUNT = 100;
 const FRAME_PATH = (i: number) => `/hero-frames/ezgif-frame-${String(i).padStart(3, '0')}.jpg`;
 
 export const ScrollHeroFrames: React.FC = () => {
@@ -41,12 +41,12 @@ export const ScrollHeroFrames: React.FC = () => {
   }, [frame]);
 
   return (
-    <div ref={containerRef} className="relative" style={{ height: '800vh' }}>
+    <div ref={containerRef} className="relative" style={{ height: '400vh' }}>
       <div className="sticky top-0 h-[100vh] w-full overflow-hidden bg-slate-950">
         <img
           ref={imgRef}
           src={FRAME_PATH(1)}
-          alt="ChatGPT Ads hero sequence — 200 frames 1280×720"
+          alt="ChatGPT Ads hero sequence — 100 frames 1280×720"
           className="absolute inset-0 w-full h-full object-cover"
           loading="eager"
           // @ts-ignore
