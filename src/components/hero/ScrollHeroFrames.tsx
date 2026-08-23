@@ -61,10 +61,10 @@ export const ScrollHeroFrames: React.FC = () => {
         {/* Overlay copy — centered, light-theme friendly */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
           <h1 className="mt-4 text-3xl sm:text-5xl font-black tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
-            ChatGPT Ads <span className="bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">Dominance</span>
+            From Traditional Search,<br />to Research to <span className="bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">Recommendation</span>
           </h1>
           <p className="mt-3 max-w-2xl text-sm sm:text-base text-white/85 drop-shadow">
-            Conversational intent → sponsored reveal. Full 200-frame sequence.
+            Search → Research → Recommendation. The new conversational funnel.
           </p>
         </div>
 
