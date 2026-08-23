@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const FRAME_COUNT = 50;
+const FRAME_COUNT = 100;
 const FRAME_PATH = (i: number) => `/hero-frames/ezgif-frame-${String(i).padStart(3, '0')}.jpg`;
 
 export const ScrollHeroFrames: React.FC = () => {
@@ -41,12 +41,12 @@ export const ScrollHeroFrames: React.FC = () => {
   }, [frame]);
 
   return (
-    <div ref={containerRef} className="relative" style={{ height: '320vh' }}>
+    <div ref={containerRef} className="relative" style={{ height: '500vh' }}>
       <div className="sticky top-0 h-[100vh] w-full overflow-hidden bg-slate-950">
         <img
           ref={imgRef}
           src={FRAME_PATH(1)}
-          alt="ChatGPT Ads hero sequence — 50 frames 1280×720"
+          alt="ChatGPT Ads hero sequence — 100 frames 1280×720"
           className="absolute inset-0 w-full h-full object-cover"
           loading="eager"
           // @ts-ignore
@@ -64,7 +64,7 @@ export const ScrollHeroFrames: React.FC = () => {
             ChatGPT Ads <span className="bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">Dominance</span>
           </h1>
           <p className="mt-3 max-w-2xl text-sm sm:text-base text-white/85 drop-shadow">
-            Conversational intent → sponsored reveal. Scroll to explore the full 50-frame sequence.
+            Conversational intent → sponsored reveal. Full 100-frame sequence.
           </p>
         </div>
 
