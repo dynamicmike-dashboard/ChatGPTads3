@@ -19,3 +19,4 @@
 - Always verify `PROJECT_MANIFEST.md` before execution.
 - Teable PAT is Teable-managed for `appYqI2X3FUCnaZnyll` / `bse34DbEKXmDzwhMCoK`; Vercel project requires `TEABLE_PAT`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` in Production env.
 - Stripe webhook `we_1U72kjGe9hhLYer6lAGM41fK` → `https://ads3.maistermind.com/api/stripe-webhook` listens to `checkout.session.completed` / `expired`, maps price `price_1U72RhGe9hhLYer6J57c5rRA` → Full ($72) and Course price → Course ($297).
+- **Scroll Hero:** 200-frame 1280×720 scrub above page (`public/hero-frames/001-200.jpg`, `src/components/hero/ScrollHeroFrames.tsx`), light scrim, no dark mode, no SCROLL pill.

@@ -36,3 +36,23 @@ Initialize every task with: `Read SYSTEM_PROTOCOL.md and PROJECT_MANIFEST.md. Al
 # TASK: SALESY INTRO + COSTS/RISKS/OUTSTANDING
 "Initialize from SYSTEM_PROTOCOL.md. Read PROJECT_MANIFEST.md. Add salesy intro to FullAccessDashboard and SalesLandingView (conversational vs search/interrupt), add Costs/Risks/Warnings/Outstanding section, build Outstanding quick-wins list (toast, progress, continue-watching, print, shortcuts, dark mode audit, copy, session restore)."
 ```
+
+```md
+# TASK: SCROLL HERO 200-FRAME
+"Initialize from SYSTEM_PROTOCOL.md. Read PROJECT_MANIFEST.md. Ensure src/components/hero/ScrollHeroFrames.tsx uses 200 frames (001-200), 800vh container, 1280×720 originals, fetchPriority high, no SCROLL pill, light scrim, hero text 'From Traditional Search, to Research to Recommendation'. Verify public/hero-frames 001-200.jpg present."
+```
+
+```md
+# TASK: GHL LEAD GATE + DUAL UPSELL
+"Initialize from SYSTEM_PROTOCOL.md. Read PROJECT_MANIFEST.md. AssessmentResultView: GHLLeadCapture gate (name/email/business/market) → personalized report + dual upsell Full $72 / Advanced Course $297. api/ghl-lead.ts upserts Teable Users (fldnCIBV...), fires GHL webhook fire-and-forget. Skip option resets gate. Retake resets gate."
+```
+
+```md
+# TASK: PRICING & PAYMENT MODAL
+"Initialize from SYSTEM_PROTOCOL.md. Read PROJECT_MANIFEST.md. StripeCheckoutModal: Full $72 / Course $297 modal prices dynamic via plan prop. Header enroll $72. i18n enroll/enrollMasterclass $72, unlockCourse $297. Header shows License Active / Course Active / Enroll $72 based on paymentStatus."
+```
+
+```md
+# TASK: REDEPLOY ADS3.MAISTERMIND.COM
+"Initialize from SYSTEM_PROTOCOL.md. Read PROJECT_MANIFEST.md. Build vite, push to dynamicmike-dashboard/ChatGPTads3, redeploy Vercel project dynamicmikes-projects/chatgptads3, verify https://ads3.maistermind.com/ and /dashboard (72) and /course (297) resolve, no black screen (deferredPrompt global)."
+```
