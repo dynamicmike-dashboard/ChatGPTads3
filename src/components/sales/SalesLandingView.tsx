@@ -65,7 +65,7 @@ export const SalesLandingView: React.FC<SalesLandingViewProps> = ({
     },
     {
       q: 'Can I advertise in the US and UK if my business is based in Mexico, Europe, or elsewhere?',
-      a: 'Yes! ChatGPT ad targeting operates based on the user’s conversational geography and intent. Having foreign accounts does not block you from buying US, UK, Mexico, or global inventory.'
+      a: 'Yes! ChatGPT ad targeting operates based on the user\'s conversational geography and intent. Having foreign accounts does not block you from buying US, UK, Mexico, or global inventory.'
     },
     {
       q: 'Are ChatGPT ads really live, and what are the current bidding prices?',
@@ -164,7 +164,7 @@ export const SalesLandingView: React.FC<SalesLandingViewProps> = ({
         </div>
       </div>
 
-      {/* Why Speed is Crucial Right Now */}
+      {/* Ad Type Positioning Section */}
       <div className="max-w-6xl mx-auto px-4">
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xl">
           <div className="max-w-3xl mb-8">
@@ -441,8 +441,8 @@ export const SalesLandingView: React.FC<SalesLandingViewProps> = ({
                   </div>
                 )}
               </div>
-            );
-          })}
+            )}
+          )}
         </div>
       </div>
 
