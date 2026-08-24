@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActiveTab, ModalType, ThemeMode, Language } from '../../types';
+import { ActiveTab, ModalType, ThemeMode, Language, CourseSubTab } from '../../types';
 import { 
   Sparkles, 
   BookOpen, 
@@ -36,6 +36,8 @@ interface HeaderProps {
   paymentStatus: 'free' | 'full' | 'course';
   isLocked: boolean;
   isFirstVisit: boolean;
+  courseSubTab: CourseSubTab;
+  setCourseSubTab: (tab: CourseSubTab) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -51,7 +53,9 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleLanguage,
   paymentStatus,
   isLocked,
-  isFirstVisit
+  isFirstVisit,
+  courseSubTab,
+  setCourseSubTab
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-white/95 border-b border-slate-200 backdrop-blur-md">
@@ -159,41 +163,56 @@ export const Header: React.FC<HeaderProps> = ({
             <Sparkles className="w-3 h-3 text-cyan-600" /> Diagnostic
           </button>
 
-          <button
-            type="button"
-            onClick={() => setActiveTab('course')}
-            disabled={isLocked}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${isLocked ? 'opacity-50 cursor-not-allowed' : ''} ${
-              activeTab === 'course'
-                ? 'bg-white text-emerald-700 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}>
-            <BookOpen className="w-3 h-3 text-emerald-600" /> Masterclass (12)
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('prompts')}
-            disabled={isLocked}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${isLocked ? 'opacity-50 cursor-not-allowed' : ''} ${
-              activeTab === 'prompts'
-                ? 'bg-white text-cyan-700 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}>
-            <Terminal className="w-3 h-3 text-cyan-600" /> Prompts (60)
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('bonuses')}
-            disabled={isLocked}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${isLocked ? 'opacity-50 cursor-not-allowed' : ''} ${
-              activeTab === 'bonuses'
-                ? 'bg-white text-indigo-700 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}>
-            <Gift className="w-3 h-3 text-indigo-600" /> Bonuses
-          </button>
+          {/* Course tab - shows sub-tabs when active */}
+          {activeTab === 'course' ? (
+            <div className="flex items-center gap-1">
+              <button
+                role="tab"
+                aria-selected={courseSubTab === 'dashboard'}
+                onClick={() => setCourseSubTab('dashboard')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  courseSubTab === 'dashboard'
+                    ? 'bg-emerald-600 text-white shadow-md'
+                    : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700'
+              }`}>
+                <LayoutDashboard className="w-3 h-3 text-emerald-600" /> Dashboard
+              </button>
+              <button
+                role="tab"
+                aria-selected={courseSubTab === 'prompts'}
+                onClick={() => setCourseSubTab('prompts')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  courseSubTab === 'prompts'
+                    ? 'bg-emerald-600 text-white shadow-md'
+                    : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700'
+              }`}>
+                <Terminal className="w-3 h-3 text-cyan-600" /> Prompts
+              </button>
+              <button
+                role="tab"
+                aria-selected={courseSubTab === 'bonuses'}
+                onClick={() => setCourseSubTab('bonuses')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  courseSubTab === 'bonuses'
+                    ? 'bg-purple-600 text-white shadow-md'
+                    : 'text-slate-600 hover:bg-purple-50 dark:hover:bg-purple-900/30'
+              }`}>
+                <Gift className="w-3 h-3 text-indigo-600" /> Bonuses
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setActiveTab('course')}
+              disabled={isLocked}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${isLocked ? 'opacity-50 cursor-not-allowed' : ''} ${
+                activeTab === 'course'
+                  ? 'bg-white text-emerald-700 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}>
+              <BookOpen className="w-3 h-3 text-emerald-600" /> Masterclass (12)
+            </button>
+          )}
         </nav>
 
         {/* Right Actions: Install PWA + Buy */}
@@ -280,22 +299,6 @@ export const Header: React.FC<HeaderProps> = ({
             className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'course' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'} ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             Course (12)
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('prompts')}
-            disabled={isLocked}
-            className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'prompts' ? 'text-cyan-700 bg-white shadow-sm' : 'text-slate-600'} ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
-          >
-            Prompts
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('bonuses')}
-            disabled={isLocked}
-            className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'bonuses' ? 'text-indigo-700 bg-white shadow-sm' : 'text-slate-600'} ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
-          >
-            Bonuses
           </button>
         </div>
     </header>

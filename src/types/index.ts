@@ -1,4 +1,5 @@
-export type ActiveTab = 'sales' | 'dashboard' | 'dossier' | 'simulator' | 'assessment' | 'course' | 'prompts' | 'bonuses';
+export type ActiveTab = 'sales' | 'dashboard' | 'dossier' | 'simulator' | 'assessment' | 'course';
+export type CourseSubTab = 'dashboard' | 'prompts' | 'bonuses';
 export type ThemeMode = 'light' | 'dark';
 export type Language = 'en' | 'es';
 

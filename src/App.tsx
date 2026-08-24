@@ -32,11 +32,13 @@ export default function App() {
   const getInitialTab = (): ActiveTab => {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname;
-      if (path === '/course' || path.startsWith('/course/')) return 'course';
+      if (path === '/course') return 'course';
       if (path === '/dashboard') return 'dashboard';
       if (path === '/dossier') return 'dossier';
       if (path === '/simulator') return 'simulator';
       if (path === '/assessment') return 'assessment';
+      if (path === '/prompts') return 'prompts';
+      if (path === '/bonuses') return 'bonuses';
     }
     return 'sales';
   };
@@ -55,35 +57,19 @@ export default function App() {
       simulator: '/simulator',
       assessment: '/assessment',
       course: '/course',
+      prompts: '/prompts',
+      bonuses: '/bonuses',
     };
     const newPath = pathMap[activeTab];
-    if (activeTab === 'course') {
-      const subPathMap: Record<CourseSubTab, string> = {
-        dashboard: '/course',
-        prompts: '/course/prompts',
-        bonuses: '/course/bonuses',
-      };
-      const fullPath = `/course${subPathMap[courseSubTab] || ''}`;
-      if (window.location.pathname !== fullPath) {
-        window.history.pushState(null, '', fullPath);
-      }
-    } else if (window.location.pathname !== newPath) {
+    if (window.location.pathname !== newPath) {
       window.history.pushState(null, '', newPath);
     }
-  }, [activeTab, courseSubTab]);
+  }, [activeTab]);
 
   // Handle browser back/forward buttons
   useEffect(() => {
     const handlePopState = () => {
-      const path = window.location.pathname;
-      if (path === '/course' || path.startsWith('/course/')) {
-        setActiveTab('course');
-        if (path === '/course/prompts') setCourseSubTab('prompts');
-        else if (path === '/course/bonuses') setCourseSubTab('bonuses');
-        else setCourseSubTab('dashboard');
-      } else {
-        setActiveTab(getInitialTab());
-      }
+      setActiveTab(getInitialTab());
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -292,11 +278,9 @@ export default function App() {
         paymentStatus={paymentStatus}
         isLocked={isLocked}
         isFirstVisit={isFirstVisit}
-        courseSubTab={courseSubTab}
-        setCourseSubTab={setCourseSubTab}
       />
 
-      {/* Scroll Movie Hero — 100 frames, scrub on scroll, above rest of webpage */}
+      {/* Scroll Movie Hero — 50 frames, scrub on scroll, above rest of webpage */}
       <ScrollHeroFrames />
 
       {/* Main App Content View Switcher */}
@@ -321,8 +305,8 @@ export default function App() {
             onOpenDossier={() => setActiveTab('dossier')}
             onOpenSimulator={() => setActiveTab('simulator')}
             onOpenAssessment={() => setActiveTab('assessment')}
-            onOpenPrompts={() => setActiveTab('prompts')}
-            onOpenBonuses={() => setActiveTab('bonuses')}
+            onOpenPrompts={() => { setActiveTab('course'); setCourseSubTab('prompts'); }}
+            onOpenBonuses={() => { setActiveTab('course'); setCourseSubTab('bonuses'); }}
             onOpenCheckout={() => openCheckout('course')}
             language={language}
           />
@@ -350,245 +334,84 @@ export default function App() {
           />
         )}
 
-        {/* TAB 4: INTERACTIVE ASSESSMENT / DIAGNOSTIC REPORT - QUIZ ONLY */}
+        {/* TAB 4: INTERACTIVE ASSESSMENT / DIAGNOSTIC REPORT - GHL gate then personalized report with download + dual upsell */}
         {activeTab === 'assessment' && (
-          <AssessmentQuiz
-            onComplete={handleAssessmentComplete}
-            onCancel={() => {
-              setIsTakingQuiz(false);
-              if (!assessmentResult) setActiveTab('sales');
-            }}
-            language={language}
-          />
-        )}
-
-        {/* TAB 5: COURSE - Parent tab with assessment result + dual upsell + sub-tabs (Dashboard, Prompts, Bonuses) */}
-        {activeTab === 'course' && (
-          <>
-            {assessmentResult && !showTeaser('course') && (
+          <div>
+            {isTakingQuiz || !assessmentResult ? (
+              <AssessmentQuiz
+                onComplete={handleAssessmentComplete}
+                onCancel={() => {
+                  setIsTakingQuiz(false);
+                  if (!assessmentResult) setActiveTab('sales');
+                }}
+                language={language}
+              />
+            ) : !hasLeadCaptured ? (
+              <GHLLeadCapture
+                score={assessmentResult.totalScore}
+                bucket={assessmentResult.bucket}
+                language={language}
+                onCaptured={(data) => {
+                  try { localStorage.setItem('chatgpt_ads_lead', JSON.stringify({ ...data, score: assessmentResult.totalScore, bucket: assessmentResult.bucket })); } catch {}
+                  fetch('/api/ghl-lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, score: assessmentResult.totalScore, bucket: assessmentResult.bucket }) }).catch(()=>{});
+                  setHasLeadCaptured(true);
+                  // Unlock the app after lead capture
+                  localStorage.setItem('chatgpt_ads_visited', 'true');
+                  setIsLocked(false);
+                }}
+                onSkip={() => {
+                  setHasLeadCaptured(true);
+                  localStorage.setItem('chatgpt_ads_visited', 'true');
+                  setIsLocked(false);
+                }}
+              />
+            ) : (
               <AssessmentResultView
                 result={assessmentResult}
                 onRetake={() => { setHasLeadCaptured(false); handleRetakeAssessment(); }}
-                onNavigateToCourse={() => { setActiveTab('course'); setCourseSubTab('dashboard'); }}
-                onNavigateToBonuses={() => { setActiveTab('course'); setCourseSubTab('bonuses'); }}
+                onNavigateToCourse={() => setActiveTab('course')}
+                onNavigateToBonuses={() => setActiveTab('bonuses')}
                 onOpenCheckout={() => openCheckout('full')}
-                onOpenCheckoutCourse={() => { setActiveTab('course'); setCourseSubTab('dashboard'); }}
+                onOpenCheckoutCourse={() => openCheckout('course')}
                 language={language}
               />
             )}
+          </div>
+        )}
 
-            {assessmentResult && showTeaser('course') && (
-              <div className="min-h-screen flex items-center justify-center p-4">
-                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full border border-slate-200 dark:border-slate-700 overflow-hidden">
-                  <div className="bg-gradient-to-r from-purple-500 to-indigo-600 p-6 sm:p-8 text-center text-white">
-                    <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>
-                    </div>
-                    <h2 className="text-2xl font-bold mb-2">12-Part Masterclass</h2>
-                    <p className="text-purple-100 max-w-md mx-auto">This content is part of the $297 Masterclass. Upgrade to unlock all 12 modules.</p>
+        {/* TAB 5: 12-PART MASTERCLASS DASHBOARD - Only for $297 course buyers */}
+        {activeTab === 'course' && (
+          showTeaser('course') ? (
+            <div className="min-h-screen flex items-center justify-center p-4">
+              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full border border-slate-200 dark:border-slate-700 overflow-hidden">
+                <div className="bg-gradient-to-r from-purple-500 to-indigo-600 p-6 sm:p-8 text-center text-white">
+                  <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>
                   </div>
-                  <div className="p-6 sm:p-8 text-center">
-                    <p className="text-slate-600 dark:text-slate-400 mb-6">The 12-part masterclass includes 12 modules, 60 advanced prompts, worksheets, and progress tracking.</p>
-                    <button
-                      onClick={() => openCheckout('course')}
-                      className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl text-base font-bold bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25 hover:scale-[1.02] transition-all cursor-pointer"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={`M12 6v6m0 0v6m0-6h6m-6 0H6`} /></svg>
-                      Upgrade to Course Access - $297
-                    </button>
-                  </div>
+                  <h2 className="text-2xl font-bold mb-2">12-Part Masterclass</h2>
+                  <p className="text-purple-100 max-w-md mx-auto">This content is part of the $297 Masterclass. Upgrade to unlock all 12 modules.</p>
                 </div>
-              </div>
-            )}
-
-            <div className="max-w-6xl mx-auto px-4 py-8">
-              {/* Course Sub-tabs Navigation */}
-              <div className="mb-6">
-                <nav className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-xl p-1 shadow-sm" role="tablist">
+                <div className="p-6 sm:p-8 text-center">
+                  <p className="text-slate-600 dark:text-slate-400 mb-6">The 12-part masterclass includes 12 modules, 60 advanced prompts, worksheets, and progress tracking.</p>
                   <button
-                    role="tab"
-                    aria-selected={courseSubTab === 'dashboard'}
-                    onClick={() => setCourseSubTab('dashboard')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                      courseSubTab === 'dashboard'
-                        ? 'bg-emerald-600 text-white shadow-md'
-                        : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'
-                    }`}
+                    onClick={() => openCheckout('course')}
+                    className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl text-base font-bold bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25 hover:scale-[1.02] transition-all cursor-pointer"
                   >
-                    Dashboard
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                    Upgrade to Course Access - $297
                   </button>
-                  <button
-                    role="tab"
-                    aria-selected={courseSubTab === 'prompts'}
-                    onClick={() => setCourseSubTab('prompts')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                      courseSubTab === 'prompts'
-                        ? 'bg-emerald-600 text-white shadow-md'
-                        : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'
-                    }`}
-                  >
-                    Prompts
-                  </button>
-                  <button
-                    role="tab"
-                    aria-selected={courseSubTab === 'bonuses'}
-                    onClick={() => setCourseSubTab('bonuses')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                      courseSubTab === 'bonuses'
-                        ? 'bg-purple-600 text-white shadow-md'
-                        : 'text-slate-600 hover:bg-purple-50 dark:hover:bg-purple-900/30'
-                    }`}
-                  >
-                    Bonuses
-                  </button>
-                </nav>
-              </div>
-
-              {/* Course Sub-tab Content */}
-              {courseSubTab === 'dashboard' && (
-                <CourseDashboard
-                  onOpenPromptVault={() => setCourseSubTab('prompts')}
-                  onOpenBonuses={() => setCourseSubTab('bonuses')}
-                  language={language}
-                />
-              )}
-              {courseSubTab === 'prompts' && (
-                <PromptVaultView 
-                  language={language} 
-                  showTeaser={false}
-                  onUpgrade={() => openCheckout('course')}
-                />
-              )}
-              {courseSubTab === 'bonuses' && (
-                <BonusesView 
-                  language={language} 
-                  showTeaser={false}
-                  onUpgrade={() => openCheckout('course')}
-                />
-              )}
-            </div>
-          );
-        })()}
-      </main>
-
-      {/* App Footer with Modal Triggers */}
-      <Footer onOpenModal={(m) => setActiveModal(m)} language={language} paymentStatus={paymentStatus} />
-
-      {/* Stripe Checkout Modal - $72 Full vs $297 Course */}
-      <StripeCheckoutModal
-        isOpen={activeModal === 'checkout'}
-        onClose={() => setActiveModal(null)}
-        onSuccess={handlePurchaseSuccess}
-        language={language}
-        plan={checkoutPlan}
-      />
-
-      {/* Legal, User Manual, & Install Modals */}
-      <LegalAndHelpModals
-        activeModal={activeModal}
-        onClose={() => setActiveModal(null)}
-        language={language}
-      />
-    </div>
-  );
-}
-
-        {/* TAB 5: COURSE - Parent tab with sub-tabs (Dashboard, Prompts, Bonuses) - Only for $297 course buyers or $72 full access */}
-        {activeTab === 'course' && (() => {
-          if (showTeaser('course')) {
-            return (
-              <div className="min-h-screen flex items-center justify-center p-4">
-                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full border border-slate-200 dark:border-slate-700 overflow-hidden">
-                  <div className="bg-gradient-to-r from-purple-500 to-indigo-600 p-6 sm:p-8 text-center text-white">
-                    <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>
-                    </div>
-                    <h2 className="text-2xl font-bold mb-2">12-Part Masterclass</h2>
-                    <p className="text-purple-100 max-w-md mx-auto">This content is part of the $297 Masterclass. Upgrade to unlock all 12 modules.</p>
-                  </div>
-                  <div className="p-6 sm:p-8 text-center">
-                    <p className="text-slate-600 dark:text-slate-400 mb-6">The 12-part masterclass includes 12 modules, 60 advanced prompts, worksheets, and progress tracking.</p>
-                    <button
-                      onClick={() => openCheckout('course')}
-                      className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl text-base font-bold bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25 hover:scale-[1.02] transition-all cursor-pointer"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={`M12 6v6m0 0v6m0-6h6m-6 0H6`} /></svg>
-                      Upgrade to Course Access - $297
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
-          );
-          return (
-            <div className="max-w-6xl mx-auto px-4 py-8">
-              {/* Course Sub-tabs Navigation */}
-              <div className="mb-6">
-                <nav className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-xl p-1 shadow-sm" role="tablist">
-                  <button
-                    role="tab"
-                    aria-selected={courseSubTab === 'dashboard'}
-                    onClick={() => setCourseSubTab('dashboard')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                      courseSubTab === 'dashboard'
-                        ? 'bg-emerald-600 text-white shadow-md'
-                        : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'
-                    }`}
-                  >
-                    Dashboard
-                  </button>
-                  <button
-                    role="tab"
-                    aria-selected={courseSubTab === 'prompts'}
-                    onClick={() => setCourseSubTab('prompts')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                      courseSubTab === 'prompts'
-                        ? 'bg-emerald-600 text-white shadow-md'
-                        : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'
-                    }`}
-                  >
-                    Prompts
-                  </button>
-                  <button
-                    role="tab"
-                    aria-selected={courseSubTab === 'bonuses'}
-                    onClick={() => setCourseSubTab('bonuses')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                      courseSubTab === 'bonuses'
-                        ? 'bg-purple-600 text-white shadow-md'
-                        : 'text-slate-600 hover:bg-purple-50 dark:hover:bg-purple-900/30'
-                    }`}
-                  >
-                    Bonuses
-                  </button>
-                </nav>
-              </div>
+          ) : (
+            <CourseDashboard
+              onOpenPromptVault={() => setActiveTab('prompts')}
+              onOpenBonuses={() => setActiveTab('bonuses')}
+              language={language}
+            />
+          )
+        )}
 
-              {/* Course Sub-tab Content */}
-              {courseSubTab === 'dashboard' && (
-                <CourseDashboard
-                  onOpenPromptVault={() => setCourseSubTab('prompts')}
-                  onOpenBonuses={() => setCourseSubTab('bonuses')}
-                  language={language}
-                />
-              )}
-              {courseSubTab === 'prompts' && (
-                <PromptVaultView 
-                  language={language} 
-                  showTeaser={false}
-                  onUpgrade={() => openCheckout('course')}
-                />
-              )}
-              {courseSubTab === 'bonuses' && (
-                <BonusesView 
-                  language={language} 
-                  showTeaser={false}
-                  onUpgrade={() => openCheckout('course')}
-                />
-              )}
-            </div>
-          );
-        })()}
       </main>
 
       {/* App Footer with Modal Triggers */}
