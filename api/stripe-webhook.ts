@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2022-11-15',
+  apiVersion: '2022-11-15' as any,
 });
 
 const TEABLE_API_URL = 'https://app.teable.ai/api';

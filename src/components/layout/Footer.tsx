@@ -1,5 +1,5 @@
 import React from 'react';
-import { ModalType } from '../../types';
+import { ModalType, Language } from '../../types';
 import { Sparkles, ShieldCheck, Smartphone, HelpCircle, FileText, Mail, Heart } from 'lucide-react';
 
 interface FooterProps {

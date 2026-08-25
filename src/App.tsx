@@ -15,6 +15,8 @@ import { StripeCheckoutModal } from './components/checkout/StripeCheckoutModal';
 import { LegalAndHelpModals } from './components/modals/LegalAndHelpModals';
 import { GHLLeadCapture } from './components/assessment/GHLLeadCapture';
 import { ScrollHeroFrames } from './components/hero/ScrollHeroFrames';
+import { COURSE_LESSONS } from './data/courseData';
+import { Sparkles, BookOpen, ArrowRight, ShieldCheck, Zap, Star, Gift, ChevronDown, ChevronUp } from 'lucide-react';
 
 // deferredPrompt MUST be a global variable for Service Worker access
 // React state is scoped to the component and causes "deferredPrompt is not defined" errors
@@ -32,21 +34,29 @@ export default function App() {
   const getInitialTab = (): ActiveTab => {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname;
-      if (path === '/course') return 'course';
+      if (path === '/course' || path === '/prompts' || path === '/bonuses') return 'course';
       if (path === '/dashboard') return 'dashboard';
       if (path === '/dossier') return 'dossier';
       if (path === '/simulator') return 'simulator';
       if (path === '/assessment') return 'assessment';
-      if (path === '/prompts') return 'prompts';
-      if (path === '/bonuses') return 'bonuses';
     }
     return 'sales';
   };
 
+  const getInitialCourseSubTab = (): CourseSubTab => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path === '/prompts') return 'prompts';
+      if (path === '/bonuses') return 'bonuses';
+    }
+    return 'dashboard';
+  };
+
   const [activeTab, setActiveTab] = useState<ActiveTab>(getInitialTab);
-  const [courseSubTab, setCourseSubTab] = useState<CourseSubTab>('dashboard');
+  const [courseSubTab, setCourseSubTab] = useState<CourseSubTab>(getInitialCourseSubTab);
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const [isTakingQuiz, setIsTakingQuiz] = useState<boolean>(false);
+  const [expandedLesson, setExpandedLesson] = useState<number | null>(1);
 
   // Sync URL with activeTab changes
   useEffect(() => {
@@ -57,19 +67,22 @@ export default function App() {
       simulator: '/simulator',
       assessment: '/assessment',
       course: '/course',
-      prompts: '/prompts',
-      bonuses: '/bonuses',
     };
-    const newPath = pathMap[activeTab];
+    let newPath = pathMap[activeTab];
+    if (activeTab === 'course') {
+      if (courseSubTab === 'prompts') newPath = '/prompts';
+      if (courseSubTab === 'bonuses') newPath = '/bonuses';
+    }
     if (window.location.pathname !== newPath) {
       window.history.pushState(null, '', newPath);
     }
-  }, [activeTab]);
+  }, [activeTab, courseSubTab]);
 
   // Handle browser back/forward buttons
   useEffect(() => {
     const handlePopState = () => {
       setActiveTab(getInitialTab());
+      setCourseSubTab(getInitialCourseSubTab());
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -163,6 +176,11 @@ export default function App() {
   
   // Payment gate: 'free' | 'full' ($72) | 'course' ($297)
   const [paymentStatus, setPaymentStatus] = useState<'free' | 'full' | 'course'>('free');
+
+  const openCheckout = (plan: 'full' | 'course') => {
+    setCheckoutPlan(plan);
+    setActiveModal('checkout');
+  };
 
   // Dev/Admin preview mode password (for testing)
   const [isPreviewMode, setIsPreviewMode] = useState<boolean>(false);
@@ -278,6 +296,9 @@ export default function App() {
         paymentStatus={paymentStatus}
         isLocked={isLocked}
         isFirstVisit={isFirstVisit}
+        courseSubTab={courseSubTab}
+        setCourseSubTab={setCourseSubTab}
+        canAccessContent={canAccessContent}
       />
 
       {/* Scroll Movie Hero — 50 frames, scrub on scroll, above rest of webpage */}
@@ -296,6 +317,8 @@ export default function App() {
             showTeasers={paymentStatus === 'free'}
             onUpgrade={() => openCheckout('full')}
             paymentStatus={paymentStatus}
+            assessmentResult={assessmentResult}
+            onAssessmentComplete={handleAssessmentComplete}
           />
         )}
 
@@ -382,24 +405,182 @@ export default function App() {
         {/* TAB 5: 12-PART MASTERCLASS DASHBOARD - Only for $297 course buyers */}
         {activeTab === 'course' && (
           showTeaser('course') ? (
-            <div className="min-h-screen flex items-center justify-center p-4">
-              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full border border-slate-200 dark:border-slate-700 overflow-hidden">
-                <div className="bg-gradient-to-r from-purple-500 to-indigo-600 p-6 sm:p-8 text-center text-white">
-                  <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>
-                  </div>
-                  <h2 className="text-2xl font-bold mb-2">12-Part Masterclass</h2>
-                  <p className="text-purple-100 max-w-md mx-auto">This content is part of the $297 Masterclass. Upgrade to unlock all 12 modules.</p>
+            <div className="max-w-5xl mx-auto px-4 py-8 space-y-12">
+              {/* Header Teaser Card */}
+              <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-800 rounded-3xl p-6 sm:p-10 shadow-xl text-center text-white relative overflow-hidden">
+                <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center mx-auto mb-4 border border-white/20">
+                  <BookOpen className="w-8 h-8 text-purple-200" />
                 </div>
-                <div className="p-6 sm:p-8 text-center">
-                  <p className="text-slate-600 dark:text-slate-400 mb-6">The 12-part masterclass includes 12 modules, 60 advanced prompts, worksheets, and progress tracking.</p>
+                <h2 className="text-3xl font-black mb-2">12-Part ChatGPT Ads Masterclass</h2>
+                <p className="text-purple-100 max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
+                  Gain lifetime access to the comprehensive strategic masterclass. Unlock all 12 modules, 60 advanced prompts, progress trackers, and bonuses.
+                </p>
+                <div className="mt-6">
                   <button
                     onClick={() => openCheckout('course')}
-                    className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl text-base font-bold bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25 hover:scale-[1.02] transition-all cursor-pointer"
+                    className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl text-base font-black bg-white hover:bg-slate-50 text-indigo-900 shadow-xl transition-all hover:scale-[1.02] cursor-pointer"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                     Upgrade to Course Access - $297
                   </button>
+                </div>
+              </div>
+
+              {/* Complete 12-Module Masterclass Syllabus */}
+              <div className="space-y-6">
+                <div className="text-center max-w-2xl mx-auto">
+                  <span className="text-xs font-bold font-mono text-cyan-700 dark:text-cyan-400 uppercase">Curriculum Breakdown</span>
+                  <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white mt-1">
+                    What You Get Inside the 12 Modules
+                  </h2>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
+                    Every module includes in-depth analysis, checklists, worksheets, and 5 advanced copyable prompts.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  {COURSE_LESSONS.map((lesson) => {
+                    const isExpanded = expandedLesson === lesson.id;
+                    return (
+                      <div 
+                        key={lesson.id} 
+                        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setExpandedLesson(isExpanded ? null : lesson.id)}
+                          className="w-full p-4 sm:p-5 flex items-center justify-between gap-4 text-left hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors cursor-pointer"
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-bold font-mono text-emerald-700 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                              {lesson.id}
+                            </span>
+                            <div>
+                              <span className="text-[10px] font-mono font-bold uppercase text-cyan-700 dark:text-cyan-400 block">
+                                {lesson.phase} • {lesson.duration}
+                              </span>
+                              <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                                {lesson.title}
+                              </h3>
+                            </div>
+                          </div>
+
+                          <div className="text-slate-500">
+                            {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                          </div>
+                        </button>
+
+                        {isExpanded && (
+                          <div className="px-5 pb-5 pt-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300 border-t border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-950/40 space-y-3">
+                            <p className="leading-relaxed">{lesson.summary}</p>
+                            
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-600 dark:text-slate-400 pt-2">
+                              <div>
+                                <strong className="text-slate-900 dark:text-slate-200">Includes 5 Advanced Prompts:</strong>
+                                <ul className="list-disc list-inside mt-1 space-y-0.5">
+                                  {lesson.advancedPrompts.map(p => (
+                                    <li key={p.id} className="truncate">{p.title}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                              <div>
+                                <strong className="text-slate-900 dark:text-slate-200">Action Worksheet:</strong>
+                                <p className="mt-1">{lesson.worksheetIdea.title}</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 2 Unannounced Bonuses Section */}
+              <div>
+                <div className="bg-gradient-to-r from-indigo-50 via-purple-50 to-slate-50 dark:from-purple-950/60 dark:via-slate-900 dark:to-indigo-950/60 border border-indigo-200 dark:border-indigo-500/40 rounded-3xl p-6 sm:p-10 shadow-xl">
+                  <div className="text-center max-w-2xl mx-auto mb-8">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 dark:bg-indigo-500/20 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/40 mb-2">
+                      <Sparkles className="w-3.5 h-3.5" /> FAST-ACTION UNANNOUNCED BONUSES
+                    </span>
+                    <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+                      Included Free When You Enroll Today
+                    </h2>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-white dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+                      <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase block mb-1">
+                        Bonus #1 ($297 Value)
+                      </span>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2">18-Point ChatGPT Ads Readiness Scorecard</h3>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                        The exact diagnostic spreadsheet and rubric to audit any offer or client campaign in 15 minutes.
+                      </p>
+                    </div>
+
+                    <div className="bg-white dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+                      <span className="text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase block mb-1">
+                        Bonus #2 ($297 Value)
+                      </span>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2">Prompt-to-Launch Swipe File & Hooks</h3>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                        Curated plug-and-play conversational ad snippets, sales objection handlers, and landing page headlines.
+                      </p>
+                    </div>
+
+                    <div className="bg-white dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+                      <span className="text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase block mb-1">
+                        Bonus #3 ($497 Value)
+                      </span>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2">Agency Client Proposal & Retainer Kit</h3>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                        3-Tier Pricing Model, Statement of Work (SOW) templates, and 7-day client onboarding SOP.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Final Bottom Checkout Conversion Card */}
+              <div>
+                <div className="bg-white dark:bg-slate-900 border-2 border-emerald-500 rounded-3xl p-6 sm:p-10 shadow-2xl text-center relative overflow-hidden">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/40 mb-4">
+                    <Sparkles className="w-3.5 h-3.5" /> SECURE LIFETIME ACCESS TODAY
+                  </div>
+
+                  <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white mb-2">
+                    Claim Your Asymmetric Advantage in Conversational Ads
+                  </h2>
+
+                  <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-base max-w-xl mx-auto mb-6">
+                    Get instant access to the complete 12-module PWA masterclass, 60 advanced prompts, GHL automations, and all 3 unlocked bonus suites.
+                  </p>
+
+                  <div className="flex items-center justify-center gap-3 mb-6">
+                    <span className="text-slate-400 line-through text-lg font-mono">$497</span>
+                    <span className="text-4xl sm:text-5xl font-black text-emerald-600 dark:text-emerald-400 font-mono">$297</span>
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">One-Time Payment</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => openCheckout('course')}
+                    className="w-full sm:w-auto px-10 py-4 rounded-2xl text-base sm:text-lg font-black bg-emerald-600 hover:bg-emerald-500 text-white shadow-xl shadow-emerald-600/25 hover:scale-[1.02] transition-all cursor-pointer inline-flex items-center justify-center gap-2"
+                  >
+                    Enroll Now & Unlock Course Dashboard <ArrowRight className="w-5 h-5" />
+                  </button>
+
+                  <div className="flex flex-wrap items-center justify-center gap-6 mt-6 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    <span className="flex items-center gap-1">
+                      <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> 256-Bit Encrypted Stripe Checkout
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Zap className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> Instant Dashboard Redirect
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Star className="w-4 h-4 text-amber-500" /> Lifetime Updates Included
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -431,6 +612,7 @@ export default function App() {
         activeModal={activeModal}
         onClose={() => setActiveModal(null)}
         language={language}
+        onOpenCheckout={() => openCheckout('full')}
       />
     </div>
   );

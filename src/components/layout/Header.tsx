@@ -38,6 +38,7 @@ interface HeaderProps {
   isFirstVisit: boolean;
   courseSubTab: CourseSubTab;
   setCourseSubTab: (tab: CourseSubTab) => void;
+  canAccessContent: (tab: ActiveTab) => boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -55,7 +56,8 @@ export const Header: React.FC<HeaderProps> = ({
   isLocked,
   isFirstVisit,
   courseSubTab,
-  setCourseSubTab
+  setCourseSubTab,
+  canAccessContent
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-white/95 border-b border-slate-200 backdrop-blur-md">
@@ -127,9 +129,14 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             type="button"
-            onClick={() => setActiveTab('dossier')}
-            disabled={isLocked}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${isLocked ? 'opacity-50 cursor-not-allowed' : ''} ${
+            onClick={() => {
+              if (canAccessContent('dossier')) {
+                setActiveTab('dossier');
+              } else {
+                onOpenModal('guide_teaser');
+              }
+            }}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'dossier'
                 ? 'bg-white text-emerald-700 shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
@@ -139,9 +146,14 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             type="button"
-            onClick={() => setActiveTab('simulator')}
-            disabled={isLocked}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${isLocked ? 'opacity-50 cursor-not-allowed' : ''} ${
+            onClick={() => {
+              if (canAccessContent('simulator')) {
+                setActiveTab('simulator');
+              } else {
+                onOpenModal('simulator_teaser');
+              }
+            }}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'simulator'
                 ? 'bg-white text-cyan-700 shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
@@ -264,17 +276,27 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('dossier')}
-            disabled={isLocked}
-            className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'dossier' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'} ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+            onClick={() => {
+              if (canAccessContent('dossier')) {
+                setActiveTab('dossier');
+              } else {
+                onOpenModal('guide_teaser');
+              }
+            }}
+            className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'dossier' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'}`}
           >
             Guide
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab('simulator')}
-            disabled={isLocked}
-            className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'simulator' ? 'text-cyan-700 bg-white shadow-sm' : 'text-slate-600'} ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+            onClick={() => {
+              if (canAccessContent('simulator')) {
+                setActiveTab('simulator');
+              } else {
+                onOpenModal('simulator_teaser');
+              }
+            }}
+            className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'simulator' ? 'text-cyan-700 bg-white shadow-sm' : 'text-slate-600'}`}
           >
             Simulator
           </button>

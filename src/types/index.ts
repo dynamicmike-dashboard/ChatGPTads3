@@ -91,4 +91,4 @@ export interface LeadCaptureData {
   bucket: string;
 }
 
-export type ModalType = 'terms' | 'privacy' | 'disclaimer' | 'manual' | 'install' | 'support' | 'checkout' | null;
+export type ModalType = 'terms' | 'privacy' | 'disclaimer' | 'manual' | 'install' | 'support' | 'checkout' | 'guide_teaser' | 'simulator_teaser' | null;

@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { ModalType } from '../../types';
-import { X, ShieldCheck, FileText, Smartphone, Laptop, Apple, HelpCircle, Mail, Download, Check, Sparkles } from 'lucide-react';
+import { X, ShieldCheck, FileText, Smartphone, Laptop, Apple, HelpCircle, Mail, Download, Check, Sparkles, BookOpen } from 'lucide-react';
 
 interface LegalAndHelpModalsProps {
   activeModal: ModalType;
   onClose: () => void;
   deferredPrompt?: any;
+  onOpenCheckout?: () => void;
+  language?: 'en' | 'es';
 }
 
 export const LegalAndHelpModals: React.FC<LegalAndHelpModalsProps> = ({
   activeModal,
   onClose,
-  deferredPrompt
+  deferredPrompt,
+  onOpenCheckout
 }) => {
   const [installSuccess, setInstallSuccess] = useState(false);
   const [supportMessageSent, setSupportMessageSent] = useState(false);
@@ -272,6 +275,102 @@ export const LegalAndHelpModals: React.FC<LegalAndHelpModalsProps> = ({
                   </button>
                 </form>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* 7. EXECUTIVE GUIDE TEASER MODAL */}
+        {activeModal === 'guide_teaser' && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 flex items-center justify-center">
+                <BookOpen className="w-6 h-6" />
+              </div>
+              <div>
+                <span className="text-[10px] font-mono font-bold text-indigo-600 uppercase tracking-wider block">PREMIUM RESOURCE</span>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">Executive Guide & Strategic Dossier</h3>
+              </div>
+            </div>
+
+            <div className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-t border-slate-200 dark:border-slate-800 pt-5 space-y-4">
+              <p>
+                Unlock the complete, unredacted executive strategist playbook designed for media buyers, founders, and marketing directors.
+              </p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-1">Strategic Arbitrage</h4>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">Frameworks to sell conversational ad setup and management to clients for $3,500/mo+ retainers.</p>
+                </div>
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-1">Platform Intelligence</h4>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">Deep comparative analysis between OpenAI, Claude, Gemini, and Perplexity ad monetization policies.</p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-500/30 text-center space-y-3">
+                <p className="text-xs font-bold text-indigo-950 dark:text-indigo-200">
+                  Get instant access to the Strategic Guide, 60 Advanced Prompts, Ad Simulator, and all 3 Bonus Suites today.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenCheckout?.();
+                  }}
+                  className="w-full py-3 sm:py-3.5 px-6 rounded-xl text-sm font-black bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/25 transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <Sparkles className="w-4 h-4" /> Enroll for $72 - Get Full Masterclass Access
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 8. AD SIMULATOR TEASER MODAL */}
+        {activeModal === 'simulator_teaser' && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-cyan-100 dark:bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 flex items-center justify-center">
+                <Laptop className="w-6 h-6" />
+              </div>
+              <div>
+                <span className="text-[10px] font-mono font-bold text-cyan-600 uppercase tracking-wider block">INTERACTIVE UTILITY</span>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">ChatGPT Ad Preview Simulator</h3>
+              </div>
+            </div>
+
+            <div className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-t border-slate-200 dark:border-slate-800 pt-5 space-y-4">
+              <p>
+                Prototype, preview, and optimize your conversational ads in real-time before pushing budgets live.
+              </p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-1">In-Feed Visual Mockups</h4>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">See exactly how your sponsored answers will look integrated into organic conversational threads.</p>
+                </div>
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-1">CTR & Intent Estimator</h4>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">Input target terms and estimate interaction yields based on initial live bidding benchmarks.</p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-cyan-50 dark:bg-cyan-950/30 border border-cyan-200 dark:border-cyan-500/30 text-center space-y-3">
+                <p className="text-xs font-bold text-cyan-900 dark:text-cyan-200">
+                  Get instant access to the Ad Simulator, 60 Advanced Prompts, Strategic Guide, and all 3 Bonus Suites today.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenCheckout?.();
+                  }}
+                  className="w-full py-3 sm:py-3.5 px-6 rounded-xl text-sm font-black bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/25 transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <Sparkles className="w-4 h-4" /> Enroll for $72 - Get Full Masterclass Access
+                </button>
+              </div>
             </div>
           </div>
         )}

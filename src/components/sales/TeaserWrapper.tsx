@@ -23,13 +23,13 @@ import {
 } from 'lucide-react';
 
 interface TeaserWrapperProps {
-  tab: ActiveTab;
+  tab: ActiveTab | 'prompts' | 'bonuses';
   paymentStatus: 'free' | 'full' | 'course';
   onUpgrade: () => void;
   language: Language;
 }
 
-const tabTeasers: Record<ActiveTab, { 
+const tabTeasers: Record<ActiveTab | 'prompts' | 'bonuses', { 
   icon: React.ReactNode; 
   title: string; 
   description: string; 
@@ -143,7 +143,7 @@ const tabTeasers: Record<ActiveTab, {
   },
 };
 
-const tabAccessMap: Record<ActiveTab, { free: boolean; full: boolean; course: boolean }> = {
+const tabAccessMap: Record<ActiveTab | 'prompts' | 'bonuses', { free: boolean; full: boolean; course: boolean }> = {
   sales: { free: true, full: true, course: true },
   dashboard: { free: false, full: true, course: false },
   dossier: { free: false, full: true, course: false },

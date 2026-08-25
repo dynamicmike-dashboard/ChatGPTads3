@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   Sparkles, 
   ArrowRight, 
@@ -19,7 +19,8 @@ import {
   ChevronUp,
   Compass
 } from 'lucide-react';
-import { COURSE_LESSONS } from '../../data/courseData';
+import { AssessmentQuiz } from '../assessment/AssessmentQuiz';
+import { AssessmentResult } from '../../types';
 
 interface SalesLandingViewProps {
   onStartAssessment: () => void;
@@ -30,6 +31,8 @@ interface SalesLandingViewProps {
   showTeasers?: boolean;
   onUpgrade?: () => void;
   paymentStatus?: 'free' | 'full' | 'course';
+  assessmentResult: AssessmentResult | null;
+  onAssessmentComplete: (result: AssessmentResult) => void;
 }
 
 export const SalesLandingView: React.FC<SalesLandingViewProps> = ({
@@ -40,10 +43,12 @@ export const SalesLandingView: React.FC<SalesLandingViewProps> = ({
   language = 'en',
   showTeasers = false,
   onUpgrade,
-  paymentStatus = 'free'
+  paymentStatus = 'free',
+  assessmentResult,
+  onAssessmentComplete
 }) => {
-  const [expandedLesson, setExpandedLesson] = useState<number | null>(1);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(0);
+  const surveyRef = useRef<HTMLDivElement>(null);
 
   // Simple Interactive ROI Calculator state
   const [calcBudget, setCalcBudget] = useState(2500);
@@ -136,7 +141,9 @@ export const SalesLandingView: React.FC<SalesLandingViewProps> = ({
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
           <button
             type="button"
-            onClick={onStartAssessment}
+            onClick={() => {
+              surveyRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }}
             className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-2xl text-base font-black bg-emerald-600 hover:bg-emerald-500 text-white shadow-xl shadow-emerald-600/25 hover:scale-[1.02] transition-all cursor-pointer"
           >
             <Sparkles className="w-5 h-5" /> Start Free Readiness Diagnostic
@@ -376,120 +383,50 @@ export const SalesLandingView: React.FC<SalesLandingViewProps> = ({
         </div>
       </div>
 
-      {/* Complete 12-Module Masterclass Syllabus */}
-      <div className="max-w-5xl mx-auto px-4 space-y-6">
-        <div className="text-center max-w-2xl mx-auto">
-          <span className="text-xs font-bold font-mono text-cyan-700 dark:text-cyan-400 uppercase">Curriculum Breakdown</span>
-          <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white mt-1">
-            What You Get Inside the 12 Modules
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Every module includes in-depth analysis, checklists, worksheets, and 5 advanced copyable prompts.
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          {COURSE_LESSONS.map((lesson) => {
-            const isExpanded = expandedLesson === lesson.id;
-            return (
-              <div 
-                key={lesson.id} 
-                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm"
+      {/* Interactive Readiness Survey Form / Completed Card */}
+      <div ref={surveyRef} className="max-w-4xl mx-auto px-4 scroll-mt-24">
+        {!assessmentResult ? (
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
+            <div className="text-center max-w-2xl mx-auto mb-6">
+              <span className="text-xs font-bold font-mono text-emerald-700 dark:text-emerald-400 uppercase">Interactive Diagnostic Survey</span>
+              <h2 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1">
+                Evaluate Your ChatGPT Ads Readiness
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
+                Complete the 18-point assessment to audit your offer, tracking, and compliance potential.
+              </p>
+            </div>
+            <AssessmentQuiz onComplete={onAssessmentComplete} />
+          </div>
+        ) : (
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl text-center space-y-6">
+            <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">Readiness Diagnostic Completed!</h3>
+              <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mt-2 max-w-md mx-auto">
+                You scored <strong className="text-emerald-600 dark:text-emerald-400 font-mono">{assessmentResult.totalScore}/100</strong>. Your personalized diagnostic scorecard and strategic roadmap are ready.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={onStartAssessment}
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md cursor-pointer"
               >
-                <button
-                  type="button"
-                  onClick={() => setExpandedLesson(isExpanded ? null : lesson.id)}
-                  className="w-full p-4 sm:p-5 flex items-center justify-between gap-4 text-left hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors cursor-pointer"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-bold font-mono text-emerald-700 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                      {lesson.id}
-                    </span>
-                    <div>
-                      <span className="text-[10px] font-mono font-bold uppercase text-cyan-700 dark:text-cyan-400 block">
-                        {lesson.phase} • {lesson.duration}
-                      </span>
-                      <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-                        {lesson.title}
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div className="text-slate-500">
-                    {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                  </div>
-                </button>
-
-                {isExpanded && (
-                  <div className="px-5 pb-5 pt-2 text-xs sm:text-sm text-slate-700 dark:text-slate-300 border-t border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-950/40 space-y-3">
-                    <p className="leading-relaxed">{lesson.summary}</p>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-600 dark:text-slate-400 pt-2">
-                      <div>
-                        <strong className="text-slate-900 dark:text-slate-200">Includes 5 Advanced Prompts:</strong>
-                        <ul className="list-disc list-inside mt-1 space-y-0.5">
-                          {lesson.advancedPrompts.map(p => (
-                            <li key={p.id} className="truncate">{p.title}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <strong className="text-slate-900 dark:text-slate-200">Action Worksheet:</strong>
-                        <p className="mt-1">{lesson.worksheetIdea.title}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          )}
-        </div>
-      </div>
-
-      {/* 2 Unannounced Bonuses Section */}
-      <div className="max-w-5xl mx-auto px-4">
-        <div className="bg-gradient-to-r from-indigo-50 via-purple-50 to-slate-50 dark:from-purple-950/60 dark:via-slate-900 dark:to-indigo-950/60 border border-indigo-200 dark:border-indigo-500/40 rounded-3xl p-6 sm:p-10 shadow-xl">
-          <div className="text-center max-w-2xl mx-auto mb-8">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 dark:bg-indigo-500/20 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/40 mb-2">
-              <Sparkles className="w-3.5 h-3.5" /> FAST-ACTION UNANNOUNCED BONUSES
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-              Included Free When You Enroll Today
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
-              <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase block mb-1">
-                Bonus #1 ($297 Value)
-              </span>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2">18-Point ChatGPT Ads Readiness Scorecard</h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                The exact diagnostic spreadsheet and rubric to audit any offer or client campaign in 15 minutes.
-              </p>
-            </div>
-
-            <div className="bg-white dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
-              <span className="text-[10px] font-mono font-bold text-cyan-700 dark:text-cyan-400 uppercase block mb-1">
-                Bonus #2 ($297 Value)
-              </span>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2">Prompt-to-Launch Swipe File & Hooks</h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                Curated plug-and-play conversational ad snippets, sales objection handlers, and landing page headlines.
-              </p>
-            </div>
-
-            <div className="bg-white dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
-              <span className="text-[10px] font-mono font-bold text-purple-700 dark:text-purple-400 uppercase block mb-1">
-                Bonus #3 ($497 Value)
-              </span>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2">Agency Client Proposal & Retainer Kit</h3>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                3-Tier Pricing Model, Statement of Work (SOW) templates, and 7-day client onboarding SOP.
-              </p>
+                View Diagnostic Report
+              </button>
+              <button
+                type="button"
+                onClick={() => onAssessmentComplete(null as any)}
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 cursor-pointer"
+              >
+                Retake Diagnostic
+              </button>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* FAQ Section */}
@@ -520,49 +457,6 @@ export const SalesLandingView: React.FC<SalesLandingViewProps> = ({
             </div>
           );
         })}
-      </div>
-
-      {/* Final Bottom Checkout Conversion Card */}
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="bg-white dark:bg-slate-900 border-2 border-emerald-500 rounded-3xl p-6 sm:p-10 shadow-2xl text-center relative overflow-hidden">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/40 mb-4">
-            <Sparkles className="w-3.5 h-3.5" /> SECURE LIFETIME ACCESS TODAY
-          </div>
-
-          <h2 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white mb-2">
-            Claim Your Asymmetric Advantage in Conversational Ads
-          </h2>
-
-          <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-base max-w-xl mx-auto mb-6">
-            Get instant access to the complete 12-module PWA masterclass, 60 advanced prompts, GHL automations, and all 3 unlocked bonus suites.
-          </p>
-
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <span className="text-slate-400 line-through text-lg font-mono">$497</span>
-            <span className="text-4xl sm:text-5xl font-black text-emerald-600 dark:text-emerald-400 font-mono">$297</span>
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">One-Time Payment</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={onOpenCheckout}
-            className="w-full sm:w-auto px-10 py-4 rounded-2xl text-base sm:text-lg font-black bg-emerald-600 hover:bg-emerald-500 text-white shadow-xl shadow-emerald-600/25 hover:scale-[1.02] transition-all cursor-pointer inline-flex items-center justify-center gap-2"
-          >
-            Enroll Now & Unlock Course Dashboard <ArrowRight className="w-5 h-5" />
-          </button>
-
-          <div className="flex flex-wrap items-center justify-center gap-6 mt-6 text-xs text-slate-500 dark:text-slate-400 font-medium">
-            <span className="flex items-center gap-1">
-              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> 256-Bit Encrypted Stripe Checkout
-            </span>
-            <span className="flex items-center gap-1">
-              <Zap className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> Instant Dashboard Redirect
-            </span>
-            <span className="flex items-center gap-1">
-              <Star className="w-4 h-4 text-amber-500" /> Lifetime Updates Included
-            </span>
-          </div>
-        </div>
       </div>
     </div>
   );
