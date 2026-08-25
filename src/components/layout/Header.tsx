@@ -103,8 +103,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('sales')}
-            disabled={isLocked}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${isLocked ? 'opacity-50 cursor-not-allowed' : ''} ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'sales'
                 ? 'bg-white text-emerald-700 shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
@@ -216,8 +215,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={() => setActiveTab('course')}
-              disabled={isLocked}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${isLocked ? 'opacity-50 cursor-not-allowed' : ''} ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                 activeTab === 'course'
                   ? 'bg-white text-emerald-700 shadow-sm'
                   : 'text-slate-600 hover:text-slate-900'
@@ -269,8 +267,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('sales')}
-            disabled={isLocked}
-            className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'sales' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'} ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'sales' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'}`}
           >
             Overview
           </button>
@@ -317,8 +314,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('course')}
-            disabled={isLocked}
-            className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'course' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'} ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`px-2 py-1 text-[11px] font-bold rounded-lg shrink-0 ${activeTab === 'course' ? 'text-emerald-700 bg-white shadow-sm' : 'text-slate-600'}`}
           >
             Course (12)
           </button>
